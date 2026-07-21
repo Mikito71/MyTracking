@@ -5,7 +5,8 @@ const http = require("http");
 const tls = require("tls");
 const path = require("path");
 const querystring = require("querystring");
-const { exec } = require("child_process");
+const os = require("os");
+const { exec, execFile } = require("child_process");
 const { Pool } = require("pg");
 
 const port = Number(process.env.ADMIN_AUTH_PORT || 3200);
