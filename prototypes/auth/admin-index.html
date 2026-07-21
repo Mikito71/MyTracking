@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Admin - Societes clientes</title>
+    <link rel="stylesheet" href="auth.css">
+  </head>
+  <body>
+    <main class="admin-app">
+      <header class="admin-topbar">
+        <div class="brand-mark">
+          <span class="brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h16M6 7v11h12V7M9 11h6M9 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>MyTracking Admin</span>
+        </div>
+        <div class="admin-user">mikael.jurgielewicz@cw2s.fr</div>
+      </header>
+
+      <div class="admin-layout">
+        <nav class="admin-sidebar" aria-label="Navigation admin">
+          <a class="active" href="index.html">Societes</a>
+          <a href="#">Provisioning</a>
+          <a href="#">Imports WinDev</a>
+          <a href="#">Utilisateurs</a>
+          <a href="#">Journal</a>
+        </nav>
+
+        <section class="admin-content">
+          <div class="page-head">
+            <div>
+              <p class="access-kicker">Backoffice plateforme</p>
+              <h1>Societes clientes</h1>
+              <p>Vue de pilotage des tenants MyTracking : statut, base dediee, migration et premiers acces.</p>
+            </div>
+            <button class="primary-button page-action" type="button" onclick="window.location.href='create-company.html'">Nouveau</button>
+          </div>
+
+          <div class="kpi-row">
+            <section class="kpi-card"><span>Societes</span><strong>3</strong></section>
+            <section class="kpi-card"><span>Actives</span><strong>1</strong></section>
+            <section class="kpi-card"><span>En migration</span><strong>1</strong></section>
+            <section class="kpi-card"><span>Erreurs</span><strong>1</strong></section>
+          </div>
+
+          <section class="admin-section">
+            <div class="section-toolbar">
+              <div class="field">
+                <label for="tenant-search">Recherche</label>
+                <input id="tenant-search" type="search" placeholder="Nom, code, SIRET">
+              </div>
+              <div class="field">
+                <label for="tenant-status">Statut</label>
+                <select id="tenant-status">
+                  <option>Tous les statuts</option>
+                  <option>Actif</option>
+                  <option>Brouillon</option>
+                  <option>Migration</option>
+                  <option>Erreur</option>
+                  <option>Suspendu</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="tenant-table" aria-label="Liste des societes clientes">
+                <thead>
+                  <tr>
+                    <th>Societe</th>
+                    <th>Code</th>
+                    <th>Statut</th>
+                    <th>Base dediee</th>
+                    <th>Personnel</th>
+                    <th>Derniere action</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>TransPlus Demo</strong><span>SIRET a confirmer</span></td>
+                    <td>TPL</td>
+                    <td><span class="badge badge-active">Actif</span></td>
+                    <td>mytracking_tenant_tpl</td>
+                    <td>4 acces</td>
+                    <td>Provisioning termine</td>
+                    <td><button class="secondary-button table-button" type="button">Ouvrir</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Opentrans Affretement</strong><span>Import HFSQL prepare</span></td>
+                    <td>OTA</td>
+                    <td><span class="badge badge-migration">Migration</span></td>
+                    <td>mytracking_tenant_ota</td>
+                    <td>0 acces</td>
+                    <td>ODBC connecte</td>
+                    <td><button class="secondary-button table-button" type="button">Ouvrir</button></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Client a creer</strong><span>Kbis attendu</span></td>
+                    <td>-</td>
+                    <td><span class="badge badge-draft">Brouillon</span></td>
+                    <td>Non creee</td>
+                    <td>0 acces</td>
+                    <td>Creation a finaliser</td>
+                    <td><button class="secondary-button table-button" type="button" onclick="window.location.href='create-company.html'">Completer</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

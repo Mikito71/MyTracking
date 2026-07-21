@@ -1,0 +1,86 @@
+services:
+  reverse-proxy:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+      - api
+      - admin-auth
+    ports:
+      - "${HTTP_BIND:-127.0.0.1}:${HTTP_PORT:-3100}:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - mytracking-beta
+
+  web:
+    image: ${WEB_IMAGE:-nginx:alpine}
+    restart: unless-stopped
+    volumes:
+      - ./static:/usr/share/nginx/html:ro
+    environment:
+      WEB_PUBLIC_URL: ${WEB_PUBLIC_URL}
+      API_PUBLIC_URL: ${API_PUBLIC_URL}
+    networks:
+      - mytracking-beta
+
+  api:
+    image: ${API_IMAGE:-nginx:alpine}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: beta
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      JWT_SECRET: ${JWT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - mytracking-beta
+
+  admin-auth:
+    image: node:22-bookworm-slim
+    restart: unless-stopped
+    working_dir: /app
+    command: sh -c "apt-get update >/tmp/mytracking-apt.log && apt-get install -y --no-install-recommends libiodbc2 libiodbc2-dev build-essential ca-certificates >/tmp/mytracking-apt.log && gcc /app/tools/iodbc-count.c -I/usr/include/iodbc -liodbc -o /tmp/mytracking-iodbc-count && gcc /app/tools/hfsql-query.c -I/usr/include/iodbc -liodbc -o /tmp/mytracking-hfsql-query && gcc /app/tools/hfsql-export-blob.c -I/usr/include/iodbc -liodbc -o /tmp/mytracking-hfsql-export-blob && mkdir -p /tmp/mytracking-admin-auth && cd /tmp/mytracking-admin-auth && npm install --omit=dev --no-audit --no-fund --silent pg@8.13.1 && NODE_PATH=/tmp/mytracking-admin-auth/node_modules HFSQL_PREFLIGHT_COMMAND=/tmp/mytracking-iodbc-count HFSQL_QUERY_COMMAND=/tmp/mytracking-hfsql-query HFSQL_BLOB_EXPORT_COMMAND=/tmp/mytracking-hfsql-export-blob node /app/server.js"
+    env_file:
+      - .env
+    environment:
+      ADMIN_AUTH_PORT: 3200
+      ADMIN_STATIC_ROOT: /static
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    volumes:
+      - ./admin-auth:/app:ro
+      - ./static:/static:ro
+      - /opt/mytracking/hfsql-odbc/wx315010:/opt/mytracking/hfsql-odbc/wx315010:ro
+      - /etc/odbcinst.ini:/etc/odbcinst.ini:ro
+      - /etc/odbc.ini:/etc/odbc.ini:ro
+    ports:
+      - "127.0.0.1:3200:3200"
+    networks:
+      - mytracking-beta
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - mytracking-beta
+
+volumes:
+  postgres-data:
+    name: mytracking-beta-postgres-data
+
+networks:
+  mytracking-beta:
+    name: mytracking-beta

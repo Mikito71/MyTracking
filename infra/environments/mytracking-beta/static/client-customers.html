@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Clients</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="client-ui.css?v=20260710-06">
+  </head>
+  <body>
+    <main class="client-app premium-client-app">
+      <header class="client-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking">
+        </div>
+        <nav class="client-nav" aria-label="Navigation client">
+          <a class="active" href="client-customers.html" aria-label="Clients">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h10v10H4zM14 10h3l3 3v4h-6zM7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <span>Clients</span>
+          </a>
+          <a href="client-staff.html" aria-label="Personnel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0ZM4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Personnel</span>
+          </a>
+          <a href="client-shipments.html" aria-label="Expeditions">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Expeditions</span>
+          </a>
+          <a href="client-invoices.html" aria-label="Facturation">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h10v18l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V3ZM9.5 8h5M9.5 12h5M9.5 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Facturation</span>
+          </a>
+          <a href="#" aria-label="Documents">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Documents</span>
+          </a>
+        </nav>
+        <div class="client-user">
+          <label for="actor-name">Utilisateur</label>
+          <input id="actor-name" type="text" value="Client SGA">
+        </div>
+      </header>
+
+      <div class="client-layout">
+        <section class="client-content">
+          <div class="client-page-head">
+            <div>
+              <p class="access-kicker">SGA</p>
+              <h1>Clients transport</h1>
+              <p class="client-subtitle">Fichier client importe depuis WinDev, nettoye pour une consultation rapide et des modifications tracables.</p>
+            </div>
+            <div class="client-actions">
+              <button class="secondary-button page-action" type="button" id="refresh-button">Actualiser</button>
+              <button class="primary-button page-action" type="button" id="save-button">Enregistrer</button>
+            </div>
+          </div>
+
+          <section class="client-sync-panel">
+            <div>
+              <p class="access-kicker">Version test client</p>
+              <h2>Synchronisation WinDev</h2>
+              <p>Recharge la base beta depuis WinDev et ecrase les saisies realisees dans la nouvelle version depuis la derniere synchro.</p>
+              <p class="sync-scope">Perimetre : societe, personnel, clients, expeditions, produits, affretes et contacts.</p>
+            </div>
+            <div class="client-sync-actions">
+              <div class="client-sync-status" id="sync-status">Chargement du statut...</div>
+              <button class="danger-button page-action" type="button" id="sync-button">Synchroniser</button>
+            </div>
+          </section>
+
+          <div class="client-kpis">
+            <section><span>Total</span><strong id="kpi-total">0</strong></section>
+            <section><span>Actifs</span><strong id="kpi-active">0</strong></section>
+            <section><span>Bloques</span><strong id="kpi-blocked">0</strong></section>
+            <section><span>A completer</span><strong id="kpi-missing">0</strong></section>
+          </div>
+
+          <div class="customer-workspace">
+            <section class="customer-list-panel">
+              <div class="customer-toolbar">
+                <div class="field">
+                  <label for="customer-search">Recherche</label>
+                  <input id="customer-search" type="search" placeholder="Nom, code, ville, SIRET">
+                </div>
+                <div class="field">
+                  <label for="customer-status">Statut</label>
+                  <select id="customer-status">
+                    <option value="">Tous</option>
+                    <option value="active">Actif</option>
+                    <option value="blocked">Bloque</option>
+                  </select>
+                </div>
+              </div>
+              <div class="customer-list" id="customer-list"></div>
+            </section>
+
+            <section class="customer-detail-panel">
+              <div class="detail-empty" id="detail-empty">Selectionnez un client.</div>
+              <form class="customer-detail" id="customer-form" hidden>
+                <div class="detail-head">
+                  <div>
+                    <span id="detail-code"></span>
+                    <h2 id="detail-title"></h2>
+                  </div>
+                  <span class="badge badge-active" id="detail-status-label">Actif</span>
+                </div>
+
+                <div class="detail-tabs" role="tablist">
+                  <button class="active" type="button" data-tab="identity">Identite</button>
+                  <button type="button" data-tab="senders">Expediteurs</button>
+                  <button type="button" data-tab="billing">Facturation</button>
+                  <button type="button" data-tab="history">Historique</button>
+                </div>
+
+                <section class="detail-tab active" data-panel="identity">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="code">Code</label>
+                      <input id="code" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="status">Statut</label>
+                      <select id="status">
+                        <option value="active">Actif</option>
+                        <option value="blocked">Bloque</option>
+                      </select>
+                    </div>
+                    <div class="field full">
+                      <label for="name">Nom</label>
+                      <input id="name" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="siret">SIRET</label>
+                      <input id="siret" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="vat-number">TVA</label>
+                      <input id="vat-number" type="text">
+                    </div>
+                    <div class="field full">
+                      <label for="address1">Adresse</label>
+                      <input id="address1" type="text">
+                    </div>
+                    <div class="field full">
+                      <label for="address2">Complement</label>
+                      <input id="address2" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="postal-code">Code postal</label>
+                      <input id="postal-code" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="city">Ville</label>
+                      <input id="city" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="phone">Telephone</label>
+                      <input id="phone" type="tel">
+                    </div>
+                    <div class="field">
+                      <label for="email">Email</label>
+                      <input id="email" type="email">
+                    </div>
+                    <div class="field">
+                      <label for="contact-name">Contact</label>
+                      <input id="contact-name" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="contact-email">Email contact</label>
+                      <input id="contact-email" type="email">
+                    </div>
+                    <div class="field">
+                      <label for="contact-mobile">Mobile contact</label>
+                      <input id="contact-mobile" type="tel">
+                    </div>
+                    <div class="field full">
+                      <label for="notes">Notes</label>
+                      <textarea id="notes"></textarea>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="detail-tab" data-panel="senders">
+                  <div class="senders-head">
+                    <div>
+                      <strong id="senders-count">0 adresse</strong>
+                      <span>Adresses d'expedition rattachees au client.</span>
+                    </div>
+                  </div>
+                  <div class="sender-address-list" id="sender-address-list"></div>
+                </section>
+
+                <section class="detail-tab" data-panel="billing">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="payment-code">Reglement</label>
+                      <input id="payment-code" type="text">
+                    </div>
+                    <label class="toggle-line">
+                      <input id="no-billing" type="checkbox">
+                      <span>Ne pas facturer ce client</span>
+                    </label>
+                    <div class="field full">
+                      <label for="billing-name">Nom facture</label>
+                      <input id="billing-name" type="text">
+                    </div>
+                    <div class="field full">
+                      <label for="billing-address1">Adresse facture</label>
+                      <input id="billing-address1" type="text">
+                    </div>
+                    <div class="field full">
+                      <label for="billing-address2">Complement facture</label>
+                      <input id="billing-address2" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="billing-postal-code">CP facture</label>
+                      <input id="billing-postal-code" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="billing-city">Ville facture</label>
+                      <input id="billing-city" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="billing-phone">Telephone facture</label>
+                      <input id="billing-phone" type="tel">
+                    </div>
+                    <div class="field">
+                      <label for="billing-email">Email facture</label>
+                      <input id="billing-email" type="email">
+                    </div>
+                  </div>
+                </section>
+
+                <section class="detail-tab" data-panel="history">
+                  <div class="history-list" id="history-list"></div>
+                </section>
+              </form>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const state = { customers: [], selected: null, selectedId: null };
+      const actorInput = document.querySelector("#actor-name");
+      actorInput.value = localStorage.getItem("mytrackingActor") || actorInput.value;
+      actorInput.addEventListener("input", () => localStorage.setItem("mytrackingActor", actorInput.value.trim()));
+
+      const fields = {
+        code: document.querySelector("#code"),
+        status: document.querySelector("#status"),
+        name: document.querySelector("#name"),
+        siret: document.querySelector("#siret"),
+        vatNumber: document.querySelector("#vat-number"),
+        address1: document.querySelector("#address1"),
+        address2: document.querySelector("#address2"),
+        postalCode: document.querySelector("#postal-code"),
+        city: document.querySelector("#city"),
+        phone: document.querySelector("#phone"),
+        email: document.querySelector("#email"),
+        contactName: document.querySelector("#contact-name"),
+        contactEmail: document.querySelector("#contact-email"),
+        contactMobile: document.querySelector("#contact-mobile"),
+        notes: document.querySelector("#notes"),
+        paymentCode: document.querySelector("#payment-code"),
+        noBilling: document.querySelector("#no-billing"),
+        billingName: document.querySelector("#billing-name"),
+        billingAddress1: document.querySelector("#billing-address1"),
+        billingAddress2: document.querySelector("#billing-address2"),
+        billingPostalCode: document.querySelector("#billing-postal-code"),
+        billingCity: document.querySelector("#billing-city"),
+        billingPhone: document.querySelector("#billing-phone"),
+        billingEmail: document.querySelector("#billing-email"),
+      };
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+
+      function setField(key, value) {
+        if (fields[key].type === "checkbox") fields[key].checked = Boolean(value);
+        else fields[key].value = value ?? "";
+      }
+
+      function payload() {
+        const data = {};
+        Object.entries(fields).forEach(([key, input]) => {
+          data[key] = input.type === "checkbox" ? input.checked : input.value.trim();
+        });
+        data.changedBy = actorInput.value.trim() || "Utilisateur client beta";
+        data.isBlocked = data.status === "blocked";
+        return data;
+      }
+
+      function isMissing(customer) {
+        return !customer.siret || !customer.email || !customer.address1;
+      }
+
+      function renderKpis() {
+        document.querySelector("#kpi-total").textContent = state.customers.length;
+        document.querySelector("#kpi-active").textContent = state.customers.filter((item) => item.status === "active").length;
+        document.querySelector("#kpi-blocked").textContent = state.customers.filter((item) => item.status === "blocked").length;
+        document.querySelector("#kpi-missing").textContent = state.customers.filter(isMissing).length;
+      }
+
+      function renderList() {
+        renderKpis();
+        const search = document.querySelector("#customer-search").value.trim().toLowerCase();
+        const status = document.querySelector("#customer-status").value;
+        const rows = state.customers.filter((item) => {
+          const haystack = [item.code, item.name, item.city, item.siret, item.email].join(" ").toLowerCase();
+          return (!search || haystack.includes(search)) && (!status || item.status === status);
+        });
+        const list = document.querySelector("#customer-list");
+        if (!rows.length) {
+          list.innerHTML = '<div class="empty-row">Aucun client trouve.</div>';
+          return;
+        }
+        list.innerHTML = rows.map((customer) => `
+          <button class="customer-row ${String(customer.id) === String(state.selectedId) ? "active" : ""}" type="button" data-id="${customer.id}">
+            <span>
+              <strong>${escapeHtml(customer.name)}</strong>
+              <small>${escapeHtml(customer.code)} · ${escapeHtml(customer.postalCode || "")} ${escapeHtml(customer.city || "")}</small>
+            </span>
+            <em>${customer.status === "blocked" ? "Bloque" : "Actif"}</em>
+          </button>
+        `).join("");
+        list.querySelectorAll(".customer-row").forEach((button) => {
+          button.addEventListener("click", () => selectCustomer(button.dataset.id));
+        });
+      }
+
+      function fillForm(customer) {
+        state.selected = customer;
+        state.selectedId = customer.id;
+        Object.keys(fields).forEach((key) => setField(key, customer[key]));
+        document.querySelector("#detail-empty").hidden = true;
+        document.querySelector("#customer-form").hidden = false;
+        document.querySelector("#detail-title").textContent = customer.name;
+        document.querySelector("#detail-code").textContent = customer.code;
+        const statusLabel = document.querySelector("#detail-status-label");
+        statusLabel.textContent = customer.status === "blocked" ? "Bloque" : "Actif";
+        statusLabel.className = `badge ${customer.status === "blocked" ? "badge-migration" : "badge-active"}`;
+        renderList();
+      }
+
+      async function loadCustomers() {
+        const response = await fetch("/client-api/customers");
+        if (!response.ok) throw new Error("Chargement impossible.");
+        const payload = await response.json();
+        state.customers = payload.customers || [];
+        renderList();
+        if (!state.selectedId && state.customers.length) selectCustomer(state.customers[0].id);
+      }
+
+      function renderSyncStatus(payload) {
+        const last = payload.runs?.[0];
+        const configured = payload.configured ? "configuree" : "non configuree";
+        const title = payload.running ? "Synchronisation en cours" : "Prete";
+        document.querySelector("#sync-status").innerHTML = `
+          <strong>${title}</strong>
+          <span>${escapeHtml(payload.summary || "Aucune synchronisation lancee.")}</span>
+          <span>Commande ${configured}</span>
+          <span>Derniere execution : ${last ? `${last.status} le ${new Date(last.finishedAt || last.startedAt).toLocaleString("fr-FR")}${last.durationMs ? ` · ${Math.round(last.durationMs / 1000)} s` : ""}` : "aucune"}</span>
+          ${last?.errorMessage ? `<span class="sync-error">${escapeHtml(last.errorMessage)}</span>` : ""}
+          ${last?.outputTail ? `<details><summary>Voir le retour technique</summary><pre>${escapeHtml(last.outputTail)}</pre></details>` : ""}
+          ${payload.runs?.length ? `<details><summary>Historique des synchros</summary>${payload.runs.map((run) => `<span>${escapeHtml(run.status)} · ${new Date(run.finishedAt || run.startedAt).toLocaleString("fr-FR")} · ${escapeHtml(run.triggeredBy || "-")}</span>`).join("")}</details>` : ""}
+        `;
+        const button = document.querySelector("#sync-button");
+        button.disabled = payload.running;
+        button.textContent = payload.running ? "Synchronisation..." : "Synchroniser";
+      }
+
+      async function loadSyncStatus() {
+        const response = await fetch("/client-api/windev-sync", { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          document.querySelector("#sync-status").innerHTML = "<strong>Statut indisponible</strong><span>API de synchro non joignable.</span>";
+          document.querySelector("#sync-button").disabled = true;
+          return;
+        }
+        renderSyncStatus(await response.json());
+      }
+
+      async function startSync() {
+        const confirmation = window.prompt("Cette action ecrase les saisies beta et recharge depuis WinDev. Tape SYNCHRONISER WINDEV pour confirmer.");
+        if (confirmation !== "SYNCHRONISER WINDEV") return;
+        const button = document.querySelector("#sync-button");
+        button.disabled = true;
+        document.querySelector("#sync-status").textContent = "Demarrage de la synchronisation...";
+        const response = await fetch("/client-api/windev-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ confirmation, actor: actorInput.value.trim() || "Client SGA", commandLabel: "windev-production-to-beta" }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          document.querySelector("#sync-status").innerHTML = `<strong>Synchronisation non lancee</strong><span class="sync-error">${escapeHtml(payload.error || "Erreur inconnue")}</span>`;
+          await loadSyncStatus();
+          return;
+        }
+        renderSyncStatus({ configured: true, running: true, runs: [payload.run] });
+        window.setTimeout(loadSyncStatus, 2500);
+      }
+
+      async function selectCustomer(id) {
+        const response = await fetch(`/client-api/customers/${id}`);
+        if (!response.ok) return;
+        const payload = await response.json();
+        fillForm(payload.customer);
+        loadSenders(id);
+        loadHistory(id);
+      }
+
+      function renderSenders(senders) {
+        document.querySelector("#senders-count").textContent = `${senders.length} adresse${senders.length > 1 ? "s" : ""}`;
+        const list = document.querySelector("#sender-address-list");
+        if (!senders.length) {
+          list.innerHTML = '<div class="empty-row">Aucune adresse expediteur connue pour ce client.</div>';
+          return;
+        }
+        list.innerHTML = senders.map((sender) => `
+          <article class="sender-address-card">
+            <header>
+              <strong>${escapeHtml(sender.name || "Expediteur sans nom")}</strong>
+              <span>${escapeHtml(sender.shipmentCount)} exp.</span>
+            </header>
+            <p>${escapeHtml([sender.address1, sender.address2, sender.address3].filter(Boolean).join(", "))}</p>
+            <p>${escapeHtml([sender.countryCode, sender.postalCode, sender.city].filter(Boolean).join(" "))}</p>
+            <footer>
+              <span>${escapeHtml(sender.phone || "Tel. non renseigne")}</span>
+              <span>${sender.lastUsedAt ? `Derniere utilisation ${new Date(sender.lastUsedAt).toLocaleDateString("fr-FR")}` : "Jamais utilisee"}</span>
+            </footer>
+            ${sender.instructions || sender.observations ? `<div class="sender-notes">${escapeHtml([sender.instructions, sender.observations].filter(Boolean).join(" | "))}</div>` : ""}
+          </article>
+        `).join("");
+      }
+
+      async function loadSenders(id) {
+        const response = await fetch(`/client-api/customers/${id}/senders`);
+        if (!response.ok) return renderSenders([]);
+        const payload = await response.json();
+        renderSenders(payload.senders || []);
+      }
+
+      function renderHistory(events) {
+        const list = document.querySelector("#history-list");
+        if (!events.length) {
+          list.innerHTML = '<div class="empty-row">Aucun historique.</div>';
+          return;
+        }
+        list.innerHTML = events.map((event) => {
+          const changes = Object.entries(event.changes || {}).map(([field, value]) => `
+            <li><strong>${escapeHtml(field)}</strong> : ${escapeHtml(value.from ?? "vide")} -> ${escapeHtml(value.to ?? "vide")}</li>
+          `).join("");
+          return `
+            <article class="history-item">
+              <header><strong>${escapeHtml(event.changedBy)}</strong><span>${new Date(event.changedAt).toLocaleString("fr-FR")}</span></header>
+              <p>${event.action === "import" ? "Import WinDev" : "Modification"}</p>
+              ${changes ? `<ul>${changes}</ul>` : ""}
+            </article>
+          `;
+        }).join("");
+      }
+
+      async function loadHistory(id) {
+        const response = await fetch(`/client-api/customers/${id}/history`);
+        if (!response.ok) return;
+        const payload = await response.json();
+        renderHistory(payload.events || []);
+      }
+
+      async function saveCustomer() {
+        if (!state.selectedId) return;
+        const button = document.querySelector("#save-button");
+        button.disabled = true;
+        button.textContent = "Enregistrement...";
+        const response = await fetch(`/client-api/customers/${state.selectedId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload()),
+        });
+        const result = await response.json().catch(() => ({}));
+        button.disabled = false;
+        button.textContent = "Enregistrer";
+        if (!response.ok) {
+          alert(result.error || "Sauvegarde impossible.");
+          return;
+        }
+        fillForm(result.customer);
+        await loadCustomers();
+        await selectCustomer(result.customer.id);
+      }
+
+      document.querySelector("#customer-search").addEventListener("input", renderList);
+      document.querySelector("#customer-status").addEventListener("change", renderList);
+      document.querySelector("#refresh-button").addEventListener("click", loadCustomers);
+      document.querySelector("#save-button").addEventListener("click", saveCustomer);
+      document.querySelector("#sync-button").addEventListener("click", startSync);
+      document.querySelectorAll(".detail-tabs button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".detail-tabs button").forEach((item) => item.classList.remove("active"));
+          document.querySelectorAll(".detail-tab").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          document.querySelector(`[data-panel="${button.dataset.tab}"]`).classList.add("active");
+        });
+      });
+      loadCustomers().catch((error) => {
+        document.querySelector("#customer-list").innerHTML = `<div class="empty-row">${escapeHtml(error.message)}</div>`;
+      });
+      loadSyncStatus();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 92" role="img" aria-labelledby="title desc">
+  <title id="title">MyTracking</title>
+  <desc id="desc">Logo MyTracking avec icone de suivi transport, trajet, point de localisation et accent ecoresponsable.</desc>
+  <defs>
+    <linearGradient id="pinBlue" x1="41" y1="7" x2="67" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0877F2"/>
+      <stop offset="1" stop-color="#0759D6"/>
+    </linearGradient>
+    <linearGradient id="leafGreen" x1="48" y1="57" x2="84" y2="44" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2F9E1F"/>
+      <stop offset="1" stop-color="#7BC943"/>
+    </linearGradient>
+  </defs>
+
+  <g aria-hidden="true">
+    <path d="M20 57a39 39 0 0 1 13-34" fill="none" stroke="#EAF2FF" stroke-width="4.8" stroke-linecap="round"/>
+    <path d="M77 24a39 39 0 0 1 8 35" fill="none" stroke="#075FDB" stroke-width="4.8" stroke-linecap="round"/>
+    <path d="M83 66a39 39 0 0 1-45 15" fill="none" stroke="#EAF2FF" stroke-width="4.8" stroke-linecap="round"/>
+
+    <path d="M22 57c12 1 21 6 28 2 7-4 8-13 19-14" fill="none" stroke="#EAF2FF" stroke-width="4" stroke-linecap="round" stroke-dasharray="3 8"/>
+
+    <path d="M56 8c-11 0-20 9-20 20 0 14 20 35 20 35s20-21 20-35C76 17 67 8 56 8Z" fill="url(#pinBlue)"/>
+    <circle cx="56" cy="28" r="8.2" fill="#FFFFFF"/>
+
+    <circle cx="19" cy="57" r="7.2" fill="#0B1B33" stroke="#FFFFFF" stroke-width="3.5"/>
+    <circle cx="85" cy="59" r="7.2" fill="#075FDB" stroke="#FFFFFF" stroke-width="3.5"/>
+    <circle cx="39" cy="80" r="6.4" fill="#58B52A" stroke="#FFFFFF" stroke-width="3.5"/>
+
+    <path d="M51 62c7-13 20-18 35-16-4 14-16 23-33 24 6-7 14-12 24-16-10 1-19 4-26 8Z" fill="url(#leafGreen)"/>
+    <path d="M54 66c8-7 15-11 25-13" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" opacity="0.86"/>
+  </g>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif" font-size="39" font-weight="850" letter-spacing="0">
+    <text x="106" y="58" fill="#2B8CFF">My</text>
+    <text x="164" y="58" fill="#FFFFFF">Tracking</text>
+  </g>
+</svg>

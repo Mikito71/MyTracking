@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Admin - Connexion</title>
+    <link rel="stylesheet" href="auth.css">
+  </head>
+  <body>
+    <main class="auth-shell">
+      <section class="auth-frame" aria-label="Connexion administrateur plateforme">
+        <aside class="brand-panel">
+          <div class="brand-mark">
+          <img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking">
+        </div>
+
+          <div class="brand-copy">
+            <p class="eyebrow">Backoffice plateforme</p>
+            <h1>Creer les societes.</h1>
+            <p>Provisionnement, bases dediees, reprise WinDev et suivi des tenants depuis un espace admin clair et verrouille.</p>
+          </div>
+
+          <div class="signal-strip" aria-label="Indicateurs plateforme">
+            <div class="signal">
+              <span>Tenants</span>
+              <strong>isoles</strong>
+            </div>
+            <div class="signal">
+              <span>Bases</span>
+              <strong>dediees</strong>
+            </div>
+            <div class="signal">
+              <span>Migration</span>
+              <strong>ODBC</strong>
+            </div>
+          </div>
+        </aside>
+
+        <section class="form-panel">
+          <div class="login-card">
+            <header>
+              <p class="access-kicker">Console plateforme</p>
+              <h2>Acces administrateur</h2>
+              <p>Connexion reservee a l'equipe qui cree les societes, provisionne les bases et suit les migrations.</p>
+            </header>
+
+            <form>
+              <div class="field-group">
+                <div class="field">
+                  <label for="admin-email">Identifiant plateforme</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                      <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <input id="admin-email" type="email" autocomplete="email" placeholder="mikael.jurgielewicz@cw2s.fr">
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="admin-password">Mot de passe</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      <path d="M6 11h12v9H6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                    <input id="admin-password" type="password" autocomplete="current-password" placeholder="Votre mot de passe">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="checkline">
+                  <input type="checkbox">
+                  <span>Poste de confiance</span>
+                </label>
+                <a class="text-link" href="#">Recuperation admin</a>
+              </div>
+
+              <button class="primary-button" type="button" onclick="window.location.href='admin/create-company.html'">
+                Ouvrir le backoffice
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </form>
+
+            <div class="security-note">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3 5 6v5c0 5 3.5 8.5 7 10 3.5-1.5 7-5 7-10V6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+              <span>Acces separe de l'espace client. Les comptes clients ne peuvent pas ouvrir cette console.</span>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

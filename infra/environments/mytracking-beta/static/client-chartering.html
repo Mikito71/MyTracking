@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Nouvel affretement</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="client-ui.css?v=20260710-04">
+  </head>
+  <body>
+    <main class="client-app premium-client-app">
+      <header class="client-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking">
+        </div>
+        <nav class="client-nav" aria-label="Navigation client">
+          <a href="client-customers.html" aria-label="Clients">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h10v10H4zM14 10h3l3 3v4h-6zM7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <span>Clients</span>
+          </a>
+          <a href="client-staff.html" aria-label="Personnel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0ZM4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Personnel</span>
+          </a>
+          <a class="active" href="client-shipments.html" aria-label="Expeditions">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Expeditions</span>
+          </a>
+          <a href="client-invoices.html" aria-label="Facturation">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h10v18l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V3ZM9.5 8h5M9.5 12h5M9.5 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Facturation</span>
+          </a>
+          <a href="#" aria-label="Documents">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Documents</span>
+          </a>
+        </nav>
+        <div class="client-user">
+          <label for="actor-name">Utilisateur</label>
+          <input id="actor-name" type="text" value="Client SGA">
+        </div>
+      </header>
+
+      <div class="client-layout">
+        <section class="client-content">
+          <div class="client-page-head charter-page-head">
+            <div>
+              <p class="access-kicker">CW2S</p>
+              <h1>Nouvel affretement</h1>
+              <p class="client-subtitle">Saisie rapide d'une position affretee.</p>
+            </div>
+            <div class="client-actions">
+              <a class="secondary-button page-action" href="client-shipments.html">Retour liste</a>
+              <button class="primary-button page-action" type="button" id="save-button">Enregistrer</button>
+            </div>
+          </div>
+
+          <form class="charter-shell" id="charter-form">
+            <section class="charter-main">
+              <article class="charter-card charter-route-card">
+                <div class="order-route-head">
+                  <header>
+                    <div>
+                      <h2>Ordre de transport</h2>
+                    </div>
+                  </header>
+                  <div class="route-strip">
+                    <div class="route-node">
+                      <span>Depart</span>
+                      <strong id="route-from">A renseigner</strong>
+                    </div>
+                    <div class="route-line"></div>
+                    <div class="route-node">
+                      <span>Arrivee</span>
+                      <strong id="route-to">A renseigner</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="charter-grid charter-order-grid">
+                  <label>N OT<input name="orderReference" required placeholder="Numero OT"></label>
+                  <label>Recepisse<input name="receiptNo" required placeholder="Ex : AFF-2026-001"></label>
+                  <label>Produit<select name="productCode" id="product-select"></select></label>
+                </div>
+                <div class="charter-grid four date-proposals">
+                  <label>Depart propose 1<input name="departureDate" type="date" required></label>
+                  <label>Depart propose 2<input name="pickupDate" type="date"></label>
+                  <label>Livraison proposee 1<input name="requestedDeliveryDate" type="date"></label>
+                  <label>Livraison proposee 2<input name="estimatedDeliveryDate" type="date"></label>
+                </div>
+              </article>
+
+              <div class="address-columns">
+                <article class="charter-card">
+                  <header><span>Expediteur</span><button class="mini-action" type="button" data-copy="sender">Copier client</button></header>
+                  <div class="charter-grid two">
+                    <label>Code client<input name="customerCode" list="customer-list" placeholder="Code"></label>
+                    <label>Adresse expediteur<select id="sender-select" disabled><option value="">Saisir un client</option></select></label>
+                    <label>Nom<input name="senderName" placeholder="Nom expediteur"></label>
+                    <label class="full">Adresse<input name="senderAddress1"></label>
+                    <label>Pays<select name="senderCountryCode" id="sender-country"></select></label>
+                    <label>CP<input name="senderPostalCode" autocomplete="postal-code"></label>
+                    <label>Ville<input name="senderCity" list="sender-city-list"><span class="city-assist" id="sender-city-assist"></span></label>
+                    <label>Telephone<input name="senderPhone"></label>
+                    <label class="full">Instructions<textarea name="senderInstructions" placeholder="Horaires, acces, contraintes chargement..."></textarea></label>
+                    <label class="full">Observations<textarea name="senderObservations" placeholder="Notes internes expediteur..."></textarea></label>
+                  </div>
+                </article>
+
+                <article class="charter-card">
+                  <header><span>Destinataire</span></header>
+                  <div class="charter-grid two">
+                    <label class="full">Nom<input name="recipientName" placeholder="Nom destinataire"></label>
+                    <label class="full">Adresse<input name="recipientAddress1"></label>
+                    <label>Pays<select name="recipientCountryCode" id="recipient-country"></select></label>
+                    <label>CP<input name="recipientPostalCode" autocomplete="postal-code"></label>
+                    <label>Ville<input name="recipientCity" list="recipient-city-list"><span class="city-assist" id="recipient-city-assist"></span></label>
+                    <label>Telephone<input name="recipientPhone"></label>
+                    <label class="full">Email<input name="recipientEmail" type="email"></label>
+                    <label class="full">Instructions<textarea name="recipientInstructions" placeholder="Horaires, acces, contraintes livraison..."></textarea></label>
+                    <label class="full">Observations<textarea name="recipientObservations" placeholder="Notes internes destinataire..."></textarea></label>
+                  </div>
+                </article>
+              </div>
+
+              <article class="charter-card">
+                <header>
+                  <span>Marchandise</span>
+                  <button class="mini-action" type="button" id="add-line">Ajouter une ligne</button>
+                </header>
+                <div class="goods-summary">
+                  <label>Colis<input name="parcels" type="number" min="0" value="1"></label>
+                  <label>Poids kg<input name="weight" type="number" min="0" step="0.01"></label>
+                  <label>Volume m3<input name="volume" type="number" min="0" step="0.001"></label>
+                  <label class="wide">Nature<input name="goodsNature" placeholder="Palette, machine, lot..."></label>
+                </div>
+                <div class="goods-lines" id="goods-lines"></div>
+              </article>
+            </section>
+
+            <aside class="charter-side">
+              <article class="charter-card price-card">
+                <header><span>Rentabilite</span><strong id="margin-rate">0 %</strong></header>
+                <div class="price-grid">
+                  <label>Prix achat affrete<input name="agreedPrice" type="number" step="0.01" min="0"></label>
+                  <label>Prix vente client<input name="transportAmount" type="number" step="0.01" min="0"></label>
+                  <label>Prix vente reference<input name="salePrice" type="number" step="0.01" min="0"></label>
+                </div>
+                <div class="margin-meter">
+                  <span>Marge estimee</span>
+                  <strong id="margin-value">0 EUR</strong>
+                  <i id="margin-bar"></i>
+                </div>
+              </article>
+
+              <article class="charter-card">
+                <header><span>Affrete</span></header>
+                <div class="charter-grid one">
+                  <label>Transporteur<input name="carrierName" list="carrier-list" id="carrier-input" placeholder="Nom transporteur"></label>
+                  <input type="hidden" name="carrierLegacyId" id="carrier-legacy-id">
+                  <label>Contact<select id="carrier-contact" name="carrierContact"><option value="">Aucun contact</option></select></label>
+                  <label>Instruction<textarea name="notes" placeholder="Consignes affrete, horaires, contraintes..."></textarea></label>
+                </div>
+              </article>
+
+              <article class="charter-card carrier-suggestions-card">
+                <header><span>Affretes similaires</span></header>
+                <div class="carrier-suggestions" id="carrier-suggestions">
+                  <p>Renseigner les CP depart et arrivee.</p>
+                </div>
+              </article>
+
+              <article class="charter-card">
+                <header><span>Payeur</span></header>
+                <div class="charter-grid one">
+                  <label>Code payeur<input name="payerCode" list="customer-list" placeholder="Identique client si vide"></label>
+                  <label>Reference client<input name="invoiceNumber" placeholder="Reference commande client"></label>
+                  <label>Statut<select name="status"><option value="open">Ouverte</option><option value="invoiced">Facturee</option><option value="closed">Soldee</option></select></label>
+                </div>
+              </article>
+
+              <div class="save-status" id="save-status">Pret a saisir.</div>
+            </aside>
+
+            <datalist id="customer-list"></datalist>
+            <datalist id="carrier-list"></datalist>
+            <datalist id="sender-city-list"></datalist>
+            <datalist id="recipient-city-list"></datalist>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const state = { customers: [], carriers: [], countries: [], products: [], senders: [], goodsLines: [{ id: 1 }], cityTimers: {}, routeTimer: null };
+      const form = document.querySelector("#charter-form");
+      const actorInput = document.querySelector("#actor-name");
+      actorInput.value = localStorage.getItem("mytrackingActor") || actorInput.value;
+      actorInput.addEventListener("input", () => localStorage.setItem("mytrackingActor", actorInput.value.trim()));
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+      }
+
+      function numberValue(name) {
+        const value = Number(String(form.elements[name]?.value || "").replace(",", "."));
+        return Number.isFinite(value) ? value : 0;
+      }
+
+      function money(value) {
+        return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value || 0);
+      }
+
+      function updateRoute() {
+        document.querySelector("#route-from").textContent = [form.elements.senderPostalCode.value, form.elements.senderCity.value].filter(Boolean).join(" ") || "A renseigner";
+        document.querySelector("#route-to").textContent = [form.elements.recipientPostalCode.value, form.elements.recipientCity.value].filter(Boolean).join(" ") || "A renseigner";
+      }
+
+      function scheduleRouteSuggestions() {
+        window.clearTimeout(state.routeTimer);
+        state.routeTimer = window.setTimeout(loadRouteSuggestions, 260);
+      }
+
+      function updateMargin() {
+        const sale = numberValue("transportAmount");
+        const purchase = numberValue("agreedPrice");
+        const margin = sale - purchase;
+        const rate = sale ? margin / sale * 100 : 0;
+        document.querySelector("#margin-value").textContent = money(margin);
+        document.querySelector("#margin-rate").textContent = `${rate.toFixed(1)} %`;
+        document.querySelector("#margin-bar").style.width = `${Math.max(0, Math.min(100, rate))}%`;
+        document.querySelector(".price-card").classList.toggle("danger", margin < 0);
+      }
+
+      function formatReceiptNo() {
+        const input = form.elements.receiptNo;
+        const digits = input.value.trim();
+        if (/^\d+$/.test(digits)) input.value = digits.padStart(8, "0").slice(-8);
+      }
+
+      function validateProduct() {
+        const product = state.products.find((item) => item.code === form.elements.productCode.value);
+        if (!product || product.isChartering) {
+          form.elements.productCode.setCustomValidity("");
+          return true;
+        }
+        form.elements.productCode.setCustomValidity("Ce produit ne gere pas l'affretement.");
+        return false;
+      }
+
+      function renderGoodsLines() {
+        const target = document.querySelector("#goods-lines");
+        target.innerHTML = state.goodsLines.map((line, index) => `
+          <div class="goods-line">
+            <span>${index + 1}</span>
+            <input placeholder="Quantite">
+            <input placeholder="Libelle marchandise">
+            <input placeholder="Consigne">
+            <button class="line-delete" type="button" data-line-id="${line.id}" ${state.goodsLines.length === 1 ? "disabled" : ""} aria-label="Supprimer la ligne">×</button>
+          </div>
+        `).join("");
+        target.querySelectorAll(".line-delete").forEach((button) => {
+          button.addEventListener("click", () => {
+            if (state.goodsLines.length === 1) return;
+            state.goodsLines = state.goodsLines.filter((line) => String(line.id) !== button.dataset.lineId);
+            renderGoodsLines();
+          });
+        });
+      }
+
+      function fillCustomer(code, prefix) {
+        const customer = state.customers.find((item) => item.code === code);
+        if (!customer) return;
+        form.elements[`${prefix}Name`].value = customer.name || "";
+        form.elements[`${prefix}Address1`].value = customer.address1 || "";
+        form.elements[`${prefix}CountryCode`].value = customer.countryCode || "FR";
+        form.elements[`${prefix}PostalCode`].value = customer.postalCode || "";
+        form.elements[`${prefix}City`].value = customer.city || "";
+        if (form.elements[`${prefix}Phone`]) form.elements[`${prefix}Phone`].value = customer.phone || "";
+        updateRoute();
+        scheduleRouteSuggestions();
+      }
+
+      function fillSender(sender) {
+        if (!sender) return;
+        form.elements.senderName.value = sender.name || "";
+        form.elements.senderAddress1.value = sender.address1 || "";
+        form.elements.senderCountryCode.value = sender.countryCode || "FR";
+        form.elements.senderPostalCode.value = sender.postalCode || "";
+        form.elements.senderCity.value = sender.city || "";
+        form.elements.senderPhone.value = sender.phone || "";
+        if (sender.instructions) form.elements.senderInstructions.value = sender.instructions;
+        if (sender.observations) form.elements.senderObservations.value = sender.observations;
+        loadCitySuggestions("sender");
+        updateRoute();
+        scheduleRouteSuggestions();
+      }
+
+      function renderSenderSelect(senders) {
+        const select = document.querySelector("#sender-select");
+        if (!senders.length) {
+          select.disabled = true;
+          select.innerHTML = '<option value="">Aucune adresse connue</option>';
+          return;
+        }
+        select.disabled = false;
+        select.innerHTML = senders.length > 1
+          ? '<option value="">Choisir une adresse</option>'
+          : "";
+        select.innerHTML += senders.map((sender) => `
+          <option value="${sender.id}">${escapeHtml([sender.name, sender.postalCode, sender.city].filter(Boolean).join(" - "))}</option>
+        `).join("");
+        if (senders.length === 1) {
+          select.value = String(senders[0].id);
+          fillSender(senders[0]);
+        }
+      }
+
+      async function loadCustomerSenders() {
+        const customer = state.customers.find((item) => item.code === form.elements.customerCode.value);
+        state.senders = [];
+        renderSenderSelect([]);
+        if (!customer) return;
+        const response = await fetch(`/client-api/customers/${customer.id}/senders`);
+        if (!response.ok) return;
+        const payload = await response.json();
+        state.senders = payload.senders || [];
+        renderSenderSelect(state.senders);
+        if (!state.senders.length) fillCustomer(customer.code, "sender");
+      }
+
+      function renderCountries() {
+        const countries = state.countries.map((country) => typeof country === "string" ? { code: country, label: country } : {
+          code: country.code,
+          label: `${country.flag ? `${country.flag} ` : ""}${country.code} - ${country.name || country.code}`,
+        }).filter((country) => country.code);
+        const options = countries.map((country) => `<option value="${escapeHtml(country.code)}">${escapeHtml(country.label)}</option>`).join("");
+        document.querySelector("#sender-country").innerHTML = options;
+        document.querySelector("#recipient-country").innerHTML = options;
+        const codes = countries.map((country) => country.code);
+        form.elements.senderCountryCode.value = codes.includes("FR") ? "FR" : (codes[0] || "");
+        form.elements.recipientCountryCode.value = codes.includes("FR") ? "FR" : (codes[0] || "");
+      }
+
+      async function loadCitySuggestions(prefix) {
+        const country = form.elements[`${prefix}CountryCode`].value;
+        const postalCode = form.elements[`${prefix}PostalCode`].value.trim();
+        const list = document.querySelector(`#${prefix}-city-list`);
+        const assist = document.querySelector(`#${prefix}-city-assist`);
+        if (!postalCode) {
+          list.innerHTML = "";
+          if (assist) assist.innerHTML = "";
+          return;
+        }
+        const response = await fetch(`/client-api/cities?country=${encodeURIComponent(country)}&postalCode=${encodeURIComponent(postalCode)}`);
+        if (!response.ok) return;
+        const payload = await response.json();
+        const cities = payload.cities || [];
+        list.innerHTML = cities.map((item) => `<option value="${escapeHtml(item.city)}">${escapeHtml(item.postalCode || "")}</option>`).join("");
+        if (assist) {
+          assist.innerHTML = cities.slice(0, 8).map((item) => `<button type="button" data-city="${escapeHtml(item.city)}">${escapeHtml(item.city)}</button>`).join("");
+          assist.querySelectorAll("button").forEach((button) => {
+            button.addEventListener("click", () => {
+              form.elements[`${prefix}City`].value = button.dataset.city;
+              updateRoute();
+              scheduleRouteSuggestions();
+            });
+          });
+        }
+        if (cities.length === 1 && !form.elements[`${prefix}City`].value) {
+          form.elements[`${prefix}City`].value = cities[0].city;
+          updateRoute();
+          scheduleRouteSuggestions();
+        }
+      }
+
+      async function loadRouteSuggestions() {
+        const senderPostalCode = form.elements.senderPostalCode.value.trim();
+        const recipientPostalCode = form.elements.recipientPostalCode.value.trim();
+        const target = document.querySelector("#carrier-suggestions");
+        if (senderPostalCode.replace(/\D/g, "").length < 2 || recipientPostalCode.replace(/\D/g, "").length < 2) {
+          target.innerHTML = "<p>Renseigner les CP depart et arrivee.</p>";
+          return;
+        }
+        target.innerHTML = "<p>Recherche des trajets similaires...</p>";
+        const response = await fetch(`/client-api/route-carrier-suggestions?senderPostalCode=${encodeURIComponent(senderPostalCode)}&recipientPostalCode=${encodeURIComponent(recipientPostalCode)}`);
+        if (!response.ok) {
+          target.innerHTML = "<p>Suggestions indisponibles.</p>";
+          return;
+        }
+        const payload = await response.json();
+        const suggestions = payload.suggestions || [];
+        if (!suggestions.length) {
+          target.innerHTML = `<p>Aucun historique ${escapeHtml(payload.route?.senderDepartment || "")} vers ${escapeHtml(payload.route?.recipientDepartment || "")}.</p>`;
+          return;
+        }
+        target.innerHTML = suggestions.map((item, index) => `
+          <article class="carrier-suggestion-card">
+            <button class="carrier-suggestion" type="button" data-suggestion-index="${index}" data-carrier-name="${escapeHtml(item.carrierName)}" data-carrier-legacy-id="${escapeHtml(item.carrierLegacyId || "")}" data-price="${escapeHtml(item.averagePrice || "")}" aria-expanded="false">
+              <span>
+                <strong>${escapeHtml(item.carrierName)}</strong>
+                <small>${item.shipmentCount} trajet${item.shipmentCount > 1 ? "s" : ""} · dernier ${escapeHtml(formatDate(item.lastDate))}</small>
+              </span>
+              <em>${money(item.averagePrice)} <small>${money(item.minPrice)} - ${money(item.maxPrice)}</small></em>
+              <b aria-hidden="true">v</b>
+            </button>
+            <div class="carrier-suggestion-detail">
+              ${(item.shipments || []).map((shipment) => `
+                <div class="similar-route-row">
+                  <span>
+                    <strong>${escapeHtml(formatDate(shipment.date))}</strong>
+                    <small>${escapeHtml(shipment.receiptNo || "")}</small>
+                  </span>
+                  <span>
+                    <strong>${escapeHtml([shipment.senderPostalCode, shipment.senderCity].filter(Boolean).join(" "))}</strong>
+                    <small>Depart</small>
+                  </span>
+                  <span>
+                    <strong>${escapeHtml([shipment.recipientPostalCode, shipment.recipientCity].filter(Boolean).join(" "))}</strong>
+                    <small>Arrivee</small>
+                  </span>
+                  <span>
+                    <strong>${escapeHtml(shipment.parcels ?? "-")} col.</strong>
+                    <small>${escapeHtml(shipment.weight ?? "-")} kg</small>
+                  </span>
+                  <span>
+                    <strong>${money(shipment.agreedPrice)}</strong>
+                    <small>Montant</small>
+                  </span>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+        `).join("");
+        target.querySelectorAll(".carrier-suggestion").forEach((button) => {
+          button.addEventListener("click", () => {
+            const card = button.closest(".carrier-suggestion-card");
+            const isOpen = card.classList.toggle("open");
+            button.setAttribute("aria-expanded", String(isOpen));
+            form.elements.carrierName.value = button.dataset.carrierName;
+            document.querySelector("#carrier-legacy-id").value = button.dataset.carrierLegacyId;
+            if (button.dataset.price) form.elements.agreedPrice.value = button.dataset.price;
+            updateMargin();
+            loadCarrierContacts();
+          });
+        });
+      }
+
+      function formatDate(value) {
+        if (!value) return "-";
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString("fr-FR");
+      }
+
+      async function loadReferenceData() {
+        const [customersResponse, productsResponse, carriersResponse, countriesResponse] = await Promise.all([
+          fetch("/client-api/customers"),
+          fetch("/client-api/products"),
+          fetch("/client-api/carriers"),
+          fetch("/client-api/countries"),
+        ]);
+        const customers = await customersResponse.json();
+        const products = await productsResponse.json();
+        const carriers = await carriersResponse.json();
+        const countries = await countriesResponse.json();
+        state.customers = customers.customers || [];
+        state.carriers = carriers.carriers || [];
+        state.countries = countries.countries?.length ? countries.countries : ["FR"];
+        state.products = products.products || [];
+        const charteringProducts = state.products.filter((item) => item.isChartering);
+        const usableProducts = charteringProducts.length ? charteringProducts : state.products;
+        renderCountries();
+        document.querySelector("#customer-list").innerHTML = state.customers.map((item) => `<option value="${escapeHtml(item.code)}">${escapeHtml(item.name || "")}</option>`).join("");
+        document.querySelector("#carrier-list").innerHTML = state.carriers.map((item) => `<option value="${escapeHtml(item.name)}">${escapeHtml([item.postalCode, item.city].filter(Boolean).join(" "))}</option>`).join("");
+        document.querySelector("#product-select").innerHTML = usableProducts.map((item) => `<option value="${escapeHtml(item.code)}">${escapeHtml(item.code)} - ${escapeHtml(item.label)}</option>`).join("");
+        validateProduct();
+        if (!form.elements.receiptNo.value) form.elements.receiptNo.value = `AFF-${new Date().toISOString().slice(0, 10).replaceAll("-", "")}-${String(Date.now()).slice(-4)}`;
+      }
+
+      async function loadCarrierContacts() {
+        const carrier = state.carriers.find((item) => item.name === form.elements.carrierName.value);
+        const select = document.querySelector("#carrier-contact");
+        document.querySelector("#carrier-legacy-id").value = carrier?.legacyId || "";
+        select.innerHTML = '<option value="">Aucun contact</option>';
+        if (!carrier?.legacyId) return;
+        const response = await fetch(`/client-api/carrier-contacts?carrierLegacyId=${encodeURIComponent(carrier.legacyId)}`);
+        const payload = await response.json();
+        const contacts = payload.contacts || [];
+        select.innerHTML = '<option value="">Aucun contact</option>' + contacts.map((item) => {
+          const label = item.email ? `${item.displayName || item.email} - ${item.email}` : (item.displayName || "");
+          return `<option value="${escapeHtml(label)}">${escapeHtml(label)}</option>`;
+        }).join("");
+        if (contacts.length === 1) select.selectedIndex = 1;
+      }
+
+      function payload() {
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.changedBy = actorInput.value.trim() || "Utilisateur client beta";
+        data.payerCode = data.payerCode || data.customerCode;
+        data.salePrice = data.salePrice || data.transportAmount;
+        data.isChartering = true;
+        const notes = [];
+        if (data.senderInstructions) notes.push(`Instructions expediteur: ${data.senderInstructions}`);
+        if (data.senderObservations) notes.push(`Observations expediteur: ${data.senderObservations}`);
+        if (data.recipientInstructions) notes.push(`Instructions destinataire: ${data.recipientInstructions}`);
+        if (data.recipientObservations) notes.push(`Observations destinataire: ${data.recipientObservations}`);
+        if (data.carrierContact) notes.push(`Contact affrete: ${data.carrierContact}`);
+        if (data.notes) notes.push(`Instructions affrete: ${data.notes}`);
+        data.notes = notes.join("\n");
+        return data;
+      }
+
+      async function saveCharter() {
+        const status = document.querySelector("#save-status");
+        formatReceiptNo();
+        validateProduct();
+        if (!form.reportValidity()) {
+          status.textContent = "Controle les champs obligatoires avant d'enregistrer.";
+          status.className = "save-status error";
+          return;
+        }
+        status.textContent = "Enregistrement...";
+        const response = await fetch("/client-api/shipments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload()),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          status.textContent = data.error || "Enregistrement impossible.";
+          status.className = "save-status error";
+          return;
+        }
+        status.textContent = `Affretement cree : ${data.shipment.receiptNo}`;
+        status.className = "save-status ok";
+      }
+
+      form.addEventListener("input", (event) => {
+        if (["senderPostalCode", "senderCity", "recipientPostalCode", "recipientCity"].includes(event.target.name)) {
+          updateRoute();
+          scheduleRouteSuggestions();
+        }
+        if (["transportAmount", "agreedPrice"].includes(event.target.name)) updateMargin();
+        if (event.target.name === "senderPostalCode") {
+          window.clearTimeout(state.cityTimers.sender);
+          state.cityTimers.sender = window.setTimeout(() => loadCitySuggestions("sender"), 180);
+        }
+        if (event.target.name === "recipientPostalCode") {
+          window.clearTimeout(state.cityTimers.recipient);
+          state.cityTimers.recipient = window.setTimeout(() => loadCitySuggestions("recipient"), 180);
+        }
+      });
+      form.elements.customerCode.addEventListener("change", loadCustomerSenders);
+      document.querySelector("#sender-select").addEventListener("change", () => {
+        const sender = state.senders.find((item) => String(item.id) === document.querySelector("#sender-select").value);
+        fillSender(sender);
+      });
+      form.elements.senderCountryCode.addEventListener("change", () => loadCitySuggestions("sender"));
+      form.elements.recipientCountryCode.addEventListener("change", () => loadCitySuggestions("recipient"));
+      form.elements.carrierName.addEventListener("change", loadCarrierContacts);
+      form.elements.productCode.addEventListener("change", validateProduct);
+      form.elements.receiptNo.addEventListener("blur", formatReceiptNo);
+      document.querySelector('[data-copy="sender"]').addEventListener("click", () => fillCustomer(form.elements.customerCode.value, "sender"));
+      document.querySelector("#add-line").addEventListener("click", () => {
+        state.goodsLines.push({ id: Date.now() });
+        renderGoodsLines();
+      });
+      document.querySelector("#save-button").addEventListener("click", saveCharter);
+      renderGoodsLines();
+      loadReferenceData().catch(() => {
+        document.querySelector("#save-status").textContent = "References indisponibles, saisie manuelle possible.";
+      });
+    </script>
+  </body>
+</html>

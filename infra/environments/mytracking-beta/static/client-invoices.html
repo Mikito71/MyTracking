@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Facturation</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="client-ui.css?v=20260721-01">
+  </head>
+  <body>
+    <main class="client-app premium-client-app">
+      <header class="client-topbar">
+        <div class="brand-mark"><img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking"></div>
+        <nav class="client-nav" aria-label="Navigation client">
+          <a href="client-customers.html" aria-label="Clients"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h10v10H4zM14 10h3l3 3v4h-6zM7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>Clients</span></a>
+          <a href="client-staff.html" aria-label="Personnel"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0ZM4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Personnel</span></a>
+          <a href="client-shipments.html" aria-label="Expeditions"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Expeditions</span></a>
+          <a class="active" href="client-invoices.html" aria-label="Facturation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h10v18l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V3ZM9.5 8h5M9.5 12h5M9.5 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Facturation</span></a>
+          <a href="#" aria-label="Documents"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Documents</span></a>
+        </nav>
+        <div class="client-user"><label for="actor-name">Utilisateur</label><input id="actor-name" type="text" value="Client SGA"></div>
+      </header>
+
+      <div class="client-layout">
+        <section class="client-content">
+          <div class="client-page-head compact-page-head">
+            <div>
+              <p class="access-kicker">SGA</p>
+              <h1>Facturation</h1>
+              <p class="client-subtitle">Factures importees depuis WinDev avec preparation anti-fraude TVA : trace, empreinte, cloture et archivage.</p>
+            </div>
+            <div class="client-actions">
+              <button class="primary-button page-action" type="button" id="pending-dispatch-button">Envoyer les factures en attente</button>
+              <button class="secondary-button page-action" type="button" id="export-invoices-button" disabled>Export Excel</button>
+              <button class="secondary-button page-action" type="button" id="refresh-button">Actualiser</button>
+            </div>
+          </div>
+
+          <section class="invoice-kpis">
+            <div><span>Factures</span><strong id="kpi-total">0</strong></div>
+            <div><span>HT</span><strong id="kpi-ht">0 EUR</strong></div>
+            <div><span>TVA</span><strong id="kpi-vat">0 EUR</strong></div>
+            <div><span>TTC</span><strong id="kpi-ttc">0 EUR</strong></div>
+            <div><span>Envoyees client</span><strong id="kpi-sent">0</strong></div>
+          </section>
+
+          <section class="tax-note">
+            <strong>Anti-fraude TVA</strong>
+            <span>Structure preparee pour inalterabilite, securisation, conservation et archivage. La certification officielle reste une etape separee.</span>
+          </section>
+
+          <section class="shipments-table-panel">
+            <div class="customer-toolbar invoices-toolbar">
+              <div class="field"><label for="invoice-search">Recherche</label><input id="invoice-search" type="search" placeholder="Numero, client, compte, produit"></div>
+              <div class="field"><label for="date-from">Du</label><input id="date-from" type="date"></div>
+              <div class="field"><label for="date-to">Au</label><input id="date-to" type="date"></div>
+              <div class="field"><label for="invoice-status">Envoyee client</label><select id="invoice-status"><option value="">Toutes</option><option value="sent">Oui</option><option value="not_sent">Non</option></select></div>
+            </div>
+            <div class="shipments-table-wrap invoices-table-wrap">
+              <table class="shipments-table invoices-table">
+                <thead><tr><th>Facture</th><th>Date</th><th>Client</th><th>Produit</th><th class="num">HT</th><th class="num">TVA</th><th class="num">TTC</th><th>Envoyee client</th><th class="num">Apercu</th></tr></thead>
+                <tbody id="invoices-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <div class="document-modal invoice-shipment-modal" id="invoice-shipment-modal" hidden>
+      <div class="document-modal-backdrop" data-close-shipment></div>
+      <section class="document-modal-panel readonly-shipment-panel" role="dialog" aria-modal="true" aria-labelledby="shipment-preview-title">
+        <header class="document-modal-head">
+          <div>
+            <span>Expedition</span>
+            <h2 id="shipment-preview-title">Apercu expedition</h2>
+          </div>
+          <button class="secondary-button" type="button" data-close-shipment>Fermer</button>
+        </header>
+        <div class="readonly-shipment-body" id="shipment-preview-body"></div>
+      </section>
+    </div>
+
+    <div class="document-modal invoice-dispatch-modal" id="invoice-dispatch-modal" hidden>
+      <div class="document-modal-backdrop" data-close-dispatch></div>
+      <section class="document-modal-panel invoice-dispatch-panel" role="dialog" aria-modal="true" aria-labelledby="dispatch-preview-title">
+        <header class="document-modal-head">
+          <div>
+            <span>Simulation sans envoi</span>
+            <h2 id="dispatch-preview-title">Preparation des envois</h2>
+          </div>
+          <div class="document-modal-actions">
+            <button class="primary-button" type="button" id="send-test-invoices-button">Envoyer les factures</button>
+            <button class="secondary-button" type="button" data-close-dispatch>Fermer</button>
+          </div>
+        </header>
+        <div class="invoice-dispatch-body">
+          <section class="invoice-dispatch-summary">
+            <div><span>Clients</span><strong id="dispatch-customer-count">0</strong></div>
+            <div><span>Documents</span><strong id="dispatch-document-count">0</strong></div>
+            <div><span>Emails invalides</span><strong id="dispatch-invalid-email-count">0</strong></div>
+          </section>
+          <div class="invoice-dispatch-status" id="invoice-dispatch-status" hidden></div>
+          <div class="invoice-dispatch-list" id="invoice-dispatch-list"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="document-modal invoice-document-modal" id="invoice-document-modal" hidden>
+      <div class="document-modal-backdrop" data-close-invoice-document></div>
+      <section class="document-modal-panel invoice-document-panel" role="dialog" aria-modal="true" aria-labelledby="invoice-document-title">
+        <header class="document-modal-head">
+          <div>
+            <span>Facture</span>
+            <h2 id="invoice-document-title">Apercu facture</h2>
+          </div>
+          <div class="document-modal-actions">
+            <button class="secondary-button" type="button" id="print-invoice-button">Imprimer</button>
+            <button class="secondary-button" type="button" data-close-invoice-document>Fermer</button>
+          </div>
+        </header>
+        <div class="invoice-document-body" id="invoice-document-body"></div>
+      </section>
+    </div>
+
+    <script>
+      const state = { invoices: [], selectedId: null, linesByInvoice: new Map(), dispatchPreview: null };
+      const actorInput = document.querySelector("#actor-name");
+      actorInput.value = localStorage.getItem("mytrackingActor") || actorInput.value;
+      actorInput.addEventListener("input", () => localStorage.setItem("mytrackingActor", actorInput.value.trim()));
+      async function hydrateCurrentStaff() {
+        try {
+          const response = await fetch(`/client-api/current-staff?actor=${encodeURIComponent(actorInput.value.trim())}`);
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok || !payload.staff) return;
+          const staffLabel = payload.staff.login || payload.staff.email || payload.staff.displayName;
+          if (!staffLabel) return;
+          actorInput.value = staffLabel;
+          localStorage.setItem("mytrackingActor", staffLabel);
+        } catch (error) {
+          // Le champ reste editable si la session ne permet pas de retrouver un personnel.
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+      }
+      function money(value) {
+        return `${Number(value || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
+      }
+      function invoiceMoney(value) {
+        return Number(value || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      function percent(value) {
+        return `${Number(value || 0).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+      }
+      function invoiceAmount(invoice, field) {
+        const value = Number(invoice[field] || 0);
+        return invoice.isCreditNote && value > 0 ? -value : value;
+      }
+      function dateOnly(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleDateString("fr-FR");
+      }
+      function sentToClientLabel(invoice) {
+        return invoice.sentToClient ? "Oui" : "Non";
+      }
+      function csvCell(value) {
+        return `"${String(value ?? "").replace(/"/g, '""')}"`;
+      }
+      function exportInvoices() {
+        if (!state.invoices.length) return;
+        const headers = ["Type", "Date facture", "N°", "Nom du client", "Montant HT", "TVA", "TTC"];
+        const rows = state.invoices.map((invoice) => [
+          invoice.isCreditNote ? "Avoir" : "Facture",
+          dateOnly(invoice.invoiceDate),
+          invoice.invoiceNumber,
+          invoice.customerName,
+          invoiceAmount(invoice, "totalHt").toFixed(2).replace(".", ","),
+          invoiceAmount(invoice, "totalVat").toFixed(2).replace(".", ","),
+          invoiceAmount(invoice, "totalTtc").toFixed(2).replace(".", ","),
+        ]);
+        const csv = [headers, ...rows].map((row) => row.map(csvCell).join(";")).join("\r\n");
+        const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `factures-recherche-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        link.remove();
+      }
+      function documentCountLabel(count) {
+        return `${count || 0} document${Number(count || 0) > 1 ? "s" : ""}`;
+      }
+      function cleanLineText(value) {
+        const text = String(value || "").trim();
+        if (!text.startsWith("{\\rtf")) return text;
+        const plain = text
+          .replace(/\\'[0-9a-fA-F]{2}/g, " ")
+          .replace(/\\par[d]?/g, "\n")
+          .replace(/\\[a-zA-Z]+-?\d* ?/g, "")
+          .replace(/[{}]/g, "")
+          .replace(/\s+\n/g, "\n")
+          .replace(/\n\s+/g, "\n")
+          .replace(/[ \t]{2,}/g, " ")
+          .trim();
+        return plain || "Detail non lisible";
+      }
+      function lineReference(line) {
+        const raw = line.identifier || "";
+        const text = cleanLineText(line.description);
+        const receipt = text.match(/\b0{3,}\d+\b/);
+        const suffix = raw && raw !== "P" ? raw : "";
+        return [receipt?.[0], suffix].filter(Boolean).join(" ") || `Ligne ${line.lineNumber || ""}`;
+      }
+      function lineDescription(line) {
+        const ref = lineReference(line).split(" ")[0];
+        return cleanLineText(line.description)
+          .split(/\n+/)
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .filter((part) => part !== ref && part !== line.identifier)
+          .join(" - ");
+      }
+      function lineParts(line) {
+        const parts = cleanLineText(line.description)
+          .split(/\n+/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+        const order = parts.find((part) => /^Commande\s+N/i.test(part)) || "";
+        const file = parts.find((part) => /^Dossier\s+N/i.test(part)) || "";
+        const routeParts = parts.filter((part) => !/^Commande\s+N/i.test(part) && !/^Dossier\s+N/i.test(part) && !/^\d{6,}/.test(part));
+        const route = [line.shipmentSenderName, line.shipmentRecipientName].filter(Boolean).join(" -> ") || routeParts.slice(0, 2).join(" -> ");
+        return { order, file, route, routeParts };
+      }
+      function lineAmount(line, field) {
+        const value = field === "vat" ? line.computedVatAmount : field === "ttc" ? line.computedAmountTtc : line.amount;
+        return Number(value || 0);
+      }
+      function positiveNumber(value) {
+        const number = Number(value || 0);
+        return Number.isFinite(number) && number > 0 ? number : 0;
+      }
+      function invoiceLineTaxableQuantity(line) {
+        return positiveNumber(line.taxableQuantity) || 1;
+      }
+      function invoiceLineUnitPrice(line) {
+        const unitPrice = positiveNumber(line.unitPrice);
+        if (unitPrice) return unitPrice;
+        const quantity = invoiceLineTaxableQuantity(line);
+        return quantity ? lineAmount(line, "ht") / quantity : 0;
+      }
+      function invoiceLineHtAmount(line) {
+        if (!positiveNumber(line.taxableQuantity) && positiveNumber(line.unitPrice)) return positiveNumber(line.unitPrice);
+        return lineAmount(line, "ht");
+      }
+      function isInvoiceGroupingLine(line) {
+        const text = cleanLineText(line.description).replace(/\s+/g, " ").trim();
+        return /^Date Du\b/i.test(text) || /^Total Date Du\b/i.test(text);
+      }
+      function invoiceLinePrintDescription(line) {
+        const parts = cleanLineText(line.description)
+          .split(/\n+/)
+          .map((part) => part.trim())
+          .filter(Boolean);
+        if (!parts.length) return "";
+        return parts
+          .filter((part) => part !== line.identifier)
+          .map((part) => escapeHtml(part))
+          .join("<br>");
+      }
+      function invoiceAddressLines(invoice) {
+        return [
+          invoice.billingName || invoice.customerName,
+          invoice.billingAddress1 || invoice.customerAddress1,
+          invoice.billingAddress2 || invoice.customerAddress2,
+          invoice.billingAddress3 || invoice.customerAddress3,
+          [invoice.billingPostalCode || invoice.customerPostalCode, invoice.billingCity || invoice.customerCity].filter(Boolean).join(" "),
+          invoice.billingCountryCode || invoice.customerCountryCode || "FRANCE",
+          invoice.vatNumber ? `N TVA : ${invoice.vatNumber}` : "",
+        ].filter(Boolean);
+      }
+      function invoiceAddressHtml(lines) {
+        return lines.map((line, index) => index === 0 ? `<strong>${escapeHtml(line)}</strong>` : `<span>${escapeHtml(line)}</span>`).join("");
+      }
+      function chunkInvoiceLines(lines) {
+        const rowsPerPage = 8;
+        const chunks = [];
+        let index = 0;
+        while (index < lines.length) {
+          chunks.push(lines.slice(index, index + rowsPerPage));
+          index += rowsPerPage;
+        }
+        return chunks.length ? chunks : [[]];
+      }
+      function invoicePageRows(rows, invoice, isLastPage, lineCount, allRows) {
+        const totalQuantity = (allRows || rows).reduce((sum, line) => sum + invoiceLineTaxableQuantity(line), 0);
+        const totalHt = (allRows || rows).reduce((sum, line) => sum + invoiceLineHtAmount(line), 0);
+        const lineRows = rows.map((line) => `
+          <tr class="${line.isBold ? "invoice-print-bold" : ""}">
+            <td>${escapeHtml(lineReference(line))}</td>
+            <td>${invoiceLinePrintDescription(line)}</td>
+            <td class="num">${escapeHtml(invoiceLineTaxableQuantity(line) ? invoiceMoney(invoiceLineTaxableQuantity(line)) : "")}</td>
+            <td class="num">${escapeHtml(invoiceLineUnitPrice(line) ? invoiceMoney(invoiceLineUnitPrice(line)) : "")}</td>
+            <td class="num">${escapeHtml(line.discountRate ? percent(line.discountRate) : "")}</td>
+            <td class="num">${escapeHtml(invoiceMoney(invoiceLineHtAmount(line)))}</td>
+            <td class="num">${escapeHtml(line.vatRate ? percent(line.vatRate) : "")}</td>
+          </tr>
+        `).join("");
+        const fillRow = `
+          <tr class="invoice-print-fill-row">
+            <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+          </tr>
+        `;
+        return lineRows + fillRow + (isLastPage ? `
+          <tr class="invoice-print-total-general">
+            <td colspan="2">Total General : ${escapeHtml(lineCount || invoice.totalPositions || 0)} Position(s)</td>
+            <td class="num">${escapeHtml(invoiceMoney(totalQuantity || invoice.totalWeight || 0))}</td>
+            <td></td>
+            <td></td>
+            <td class="num">${escapeHtml(invoiceMoney(totalHt || invoiceAmount(invoice, "totalHt")))}</td>
+            <td></td>
+          </tr>
+        ` : "");
+      }
+      function renderInvoiceDocument(invoice, lines = [], lineTotals = {}) {
+        const printLines = lines.filter((line) => line.lineType !== "empty" && !isInvoiceGroupingLine(line));
+        const pages = chunkInvoiceLines(printLines);
+        const address = invoiceAddressLines(invoice);
+        const ht = invoiceAmount(invoice, "totalHt");
+        const vat = invoiceAmount(invoice, "totalVat");
+        const ttc = invoiceAmount(invoice, "totalTtc");
+        const vatRate = ht ? Math.round((Math.abs(vat) / Math.abs(ht)) * 10000) / 100 : 20;
+        document.querySelector("#invoice-document-title").textContent = `${invoice.isCreditNote ? "Avoir" : "Facture"} ${invoice.invoiceNumber || ""}`;
+        document.querySelector("#invoice-document-body").innerHTML = pages.map((rows, pageIndex) => {
+          const isLastPage = pageIndex === pages.length - 1;
+          return `
+            <article class="invoice-print-page">
+              <header class="invoice-print-header">
+                <section class="invoice-print-company">
+                  <div class="invoice-print-brand"><img src="assets/sga-agency-logo.jpg" alt="SGA"></div>
+                  <p>58 IMPASSE GUICHENON<br>01330 VILLARS-LES-DOMBES<br>compta@sga-groupe.fr<br>Fax :<br>SIRET : 89214747100015<br>Tel : 08 50 38 04 49<br>N TVA : FR92892147471</p>
+                </section>
+                <section class="invoice-print-meta">
+                  <table>
+                    <tr><th colspan="3">${invoice.isCreditNote ? "Avoir" : "Facture"} N ${escapeHtml(invoice.invoiceNumber || "")}</th></tr>
+                    <tr><th>Date</th><th>Client</th><th>Page</th></tr>
+                    <tr><td>${escapeHtml(dateOnly(invoice.invoiceDate))}</td><td>${escapeHtml(invoice.accountCode || invoice.customerAccountCode || "")}</td><td>${pageIndex + 1}/${pages.length}</td></tr>
+                    <tr><th colspan="3">A RECEPTION DE FACTURE</th></tr>
+                    <tr><th>Echeance</th><td colspan="2">${escapeHtml(dateOnly(invoice.dueDate || invoice.invoiceDate))}</td></tr>
+                  </table>
+                  <strong>${escapeHtml(invoice.productLabel || invoice.productCode || "")}</strong>
+                </section>
+              </header>
+              <address class="invoice-print-address">${invoiceAddressHtml(address)}</address>
+              <table class="invoice-print-lines">
+                <thead>
+                  <tr><th>Ref.</th><th>Description</th><th>Qte. Tax</th><th>P.U.</th><th>Remise</th><th>Total H.T.</th><th>TVA</th></tr>
+                </thead>
+                <tbody>${invoicePageRows(rows, invoice, isLastPage, printLines.length, printLines)}</tbody>
+              </table>
+              ${isLastPage ? `
+                <footer class="invoice-print-footer">
+                  <div class="invoice-print-left-footer">
+                    <table class="invoice-print-payment">
+                      <tr><th>Facture N</th><th>Date</th><th>Client</th><th>TTC EUR</th></tr>
+                      <tr><td>${escapeHtml(invoice.invoiceNumber || "")}</td><td>${escapeHtml(dateOnly(invoice.invoiceDate))}</td><td>${escapeHtml(invoice.accountCode || "")}</td><td>${escapeHtml(invoiceMoney(ttc))}</td></tr>
+                    </table>
+                    <div class="invoice-print-rib">
+                      <strong>CC RHONE ALPES</strong>
+                      <span>BANQUE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GUICHET&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N DE COMPTE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CLE RIB</span>
+                      <span>13925&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;080107082536&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;44</span>
+                      <span>IBAN FR 76 1395 2002 0008 0107 0825 344</span>
+                    </div>
+                  </div>
+                  <table class="invoice-print-vat">
+                    <tr><th>REMISE H.T.</th><th>Taux</th><th>TVA</th><th>TTC</th></tr>
+                    <tr><td></td><td></td><td></td><td></td></tr>
+                    <tr><th>soit H.T.</th><th>Taux</th><th>TVA</th><th>TTC</th></tr>
+                    <tr><td>${escapeHtml(invoiceMoney(ht))}</td><td>${escapeHtml(percent(vatRate))}</td><td>${escapeHtml(invoiceMoney(vat))}</td><td>${escapeHtml(invoiceMoney(ttc))}</td></tr>
+                  </table>
+                </footer>
+              ` : `<footer class="invoice-print-continued">Suite page ${pageIndex + 2}</footer>`}
+            </article>
+          `;
+        }).join("");
+      }
+      function renderInvoiceLines(invoice, lines = []) {
+        const visibleLines = lines.filter((line) => !isInvoiceGroupingLine(line));
+        if (!visibleLines.length) return '<div class="invoice-inline-empty">Aucune ligne utile.</div>';
+        return `<table class="invoice-line-table">
+          <thead>
+            <tr>
+              <th>Recepisse</th>
+              <th>Commande</th>
+              <th>Trajet</th>
+              <th class="num">Colis</th>
+              <th class="num">Poids</th>
+              <th class="num">HT</th>
+              <th class="num">TVA</th>
+              <th class="num">TTC</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          ${visibleLines.map((line) => {
+            const parts = lineParts(line);
+            return `
+            <tr class="${line.isBold ? "line-bold" : ""}">
+              <td><strong>${escapeHtml(lineReference(line))}</strong></td>
+              <td><strong>${escapeHtml(parts.order.replace(/^Commande\s+/i, ""))}</strong><small>${escapeHtml(parts.file.replace(/^Dossier\s+/i, ""))}</small></td>
+              <td>${escapeHtml(parts.route || lineDescription(line))}</td>
+              <td class="num">${escapeHtml(line.parcels ?? "")}</td>
+              <td class="num">${escapeHtml(line.weight ?? "")}</td>
+              <td class="num">${escapeHtml(money(lineAmount(line, "ht")))}</td>
+              <td class="num">${escapeHtml(money(lineAmount(line, "vat")))}</td>
+              <td class="num"><strong>${escapeHtml(money(lineAmount(line, "ttc")))}</strong></td>
+              <td class="num">${line.shipmentId ? `<button class="table-icon-button" type="button" data-shipment-preview="${escapeHtml(line.shipmentId)}" title="Voir l'expedition" aria-label="Voir l'expedition">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </button>` : ""}</td>
+            </tr>
+          `;
+          }).join("")}
+          </tbody>
+        </table>`;
+      }
+      function renderKpis(stats = {}) {
+        document.querySelector("#kpi-total").textContent = stats.total || state.invoices.length || 0;
+        document.querySelector("#kpi-ht").textContent = money(stats.total_ht);
+        document.querySelector("#kpi-vat").textContent = money(stats.total_vat);
+        document.querySelector("#kpi-ttc").textContent = money(stats.total_ttc);
+        document.querySelector("#kpi-sent").textContent = stats.sent_to_client || 0;
+      }
+      function renderTable() {
+        const body = document.querySelector("#invoices-body");
+        if (!state.invoices.length) {
+          body.innerHTML = '<tr><td colspan="9" class="empty-row">Aucune facture trouvee.</td></tr>';
+          return;
+        }
+        body.innerHTML = state.invoices.map((invoice) => `
+          <tr class="${String(invoice.id) === String(state.selectedId) ? "selected-row" : ""} ${invoice.isCreditNote ? "credit-note-row" : ""}" data-id="${invoice.id}">
+            <td>
+              <strong>${escapeHtml(invoice.invoiceNumber)}</strong>
+              <small>${escapeHtml(invoice.validationCode || "")}</small>
+              ${invoice.isCreditNote ? '<span class="invoice-type-badge credit">Avoir</span>' : ""}
+            </td>
+            <td>${escapeHtml(dateOnly(invoice.invoiceDate))}<small>${escapeHtml(invoice.dueDate ? `Ech. ${dateOnly(invoice.dueDate)}` : "")}</small></td>
+            <td><strong>${escapeHtml(invoice.customerName)}</strong><small>${escapeHtml(invoice.accountCode || "")}</small></td>
+            <td>${escapeHtml(invoice.productLabel || invoice.productCode || "")}</td>
+            <td class="num">${escapeHtml(money(invoiceAmount(invoice, "totalHt")))}</td>
+            <td class="num">${escapeHtml(money(invoiceAmount(invoice, "totalVat")))}</td>
+            <td class="num"><strong>${escapeHtml(money(invoiceAmount(invoice, "totalTtc")))}</strong></td>
+            <td><span class="badge ${invoice.sentToClient ? "badge-active" : ""}">${escapeHtml(sentToClientLabel(invoice))}</span></td>
+            <td class="num">
+              <button class="table-icon-button" type="button" data-invoice-preview="${escapeHtml(invoice.id)}" title="Visualiser la facture" aria-label="Visualiser la facture">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.8"/></svg>
+              </button>
+            </td>
+          </tr>
+          ${String(invoice.id) === String(state.selectedId) ? `
+            <tr class="invoice-detail-row">
+              <td colspan="9">
+                <div class="invoice-inline-detail">
+                  <header>
+                    <strong>${escapeHtml(invoice.isCreditNote ? "Avoir" : "Facture")} ${escapeHtml(invoice.invoiceNumber)}</strong>
+                    <span>${escapeHtml(invoice.customerName || "")} - ${escapeHtml(dateOnly(invoice.invoiceDate))} - ${escapeHtml(money(invoiceAmount(invoice, "totalTtc")))}</span>
+                  </header>
+                  ${renderInvoiceLines(invoice, state.linesByInvoice.get(String(invoice.id)) || [])}
+                </div>
+              </td>
+            </tr>
+          ` : ""}
+        `).join("");
+        body.querySelectorAll("tr[data-id]").forEach((row) => row.addEventListener("click", () => toggleInvoice(row.dataset.id)));
+      }
+      async function loadInvoices() {
+        const params = new URLSearchParams();
+        const q = document.querySelector("#invoice-search").value.trim();
+        const dateFrom = document.querySelector("#date-from").value;
+        const dateTo = document.querySelector("#date-to").value;
+        const status = document.querySelector("#invoice-status").value;
+        if (q) params.set("q", q);
+        if (dateFrom) params.set("dateFrom", dateFrom);
+        if (dateTo) params.set("dateTo", dateTo);
+        if (status) params.set("status", status);
+        const response = await fetch(`/client-api/invoices?${params}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Chargement impossible.");
+        state.invoices = payload.invoices || [];
+        renderKpis(payload.stats || {});
+        renderTable();
+        document.querySelector("#export-invoices-button").disabled = !state.invoices.length;
+      }
+      async function toggleInvoice(id) {
+        if (String(state.selectedId) === String(id)) {
+          state.selectedId = null;
+          renderTable();
+          return;
+        }
+        const response = await fetch(`/client-api/invoices/${encodeURIComponent(id)}`);
+        const payload = await response.json();
+        if (!response.ok) return;
+        state.selectedId = id;
+        state.linesByInvoice.set(String(id), payload.lines || []);
+        renderTable();
+      }
+      function closeShipmentPreview() {
+        document.querySelector("#invoice-shipment-modal").hidden = true;
+        document.body.classList.remove("modal-open");
+      }
+      function closeDispatchPreview() {
+        document.querySelector("#invoice-dispatch-modal").hidden = true;
+        document.querySelector("#invoice-dispatch-status").hidden = true;
+        document.body.classList.remove("modal-open");
+      }
+      function closeInvoiceDocumentPreview() {
+        document.querySelector("#invoice-document-modal").hidden = true;
+        document.body.classList.remove("modal-open");
+      }
+      function renderDispatchPreview(payload = {}) {
+        document.querySelector("#dispatch-customer-count").textContent = payload.totalCustomers || 0;
+        document.querySelector("#dispatch-document-count").textContent = payload.totalDocuments || 0;
+        document.querySelector("#dispatch-invalid-email-count").textContent = payload.invalidEmailCount || 0;
+        document.querySelector("#invoice-dispatch-status").hidden = true;
+        const list = document.querySelector("#invoice-dispatch-list");
+        const groups = payload.groups || [];
+        if (!groups.length) {
+          list.innerHTML = "<div class=\"invoice-dispatch-empty\">Aucune facture ou avoir en attente d'envoi client.</div>";
+          return;
+        }
+        list.innerHTML = `
+          <table class="invoice-dispatch-flat" style="width:100%;border-collapse:separate;border-spacing:0 6px;color:#10232b;font-size:13px;line-height:1.35;">
+            <tbody>
+              ${groups.map((group) => {
+                const recipients = (group.recipients || []).map((recipient) => typeof recipient === "string" ? { email: recipient, isValid: true } : recipient);
+                const hasRecipients = recipients.length > 0;
+                const mailHtml = hasRecipients
+                  ? recipients.map((recipient) => `<span style="display:inline-block;margin-left:6px;color:${recipient.isValid ? "#344054" : "#b42318"};font-weight:${recipient.isValid ? "850" : "950"};">${recipient.isValid ? "" : '<span style="display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;margin-right:5px;border-radius:50%;background:#fee2e2;color:#b42318;font-weight:950;">!</span>'}${escapeHtml(recipient.email)}</span>`).join("")
+                  : '<span style="display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;margin-right:6px;border-radius:50%;background:#f59e0b;color:#111827;font-weight:950;">!</span><strong style="color:#92400e;">Aucun email renseigne</strong>';
+                const hasInvalidEmail = recipients.some((recipient) => !recipient.isValid);
+                return `
+                  <tr>
+                    <td colspan="4" style="padding:10px 12px;border-left:4px solid ${!hasRecipients || hasInvalidEmail ? "#d97706" : "#0f766e"};border-top:1px solid #d8e4e8;border-right:1px solid #d8e4e8;border-bottom:1px solid #d8e4e8;background:#ffffff;">
+                      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+                        <div>
+                          <strong style="display:block;color:#10232b;font-size:14px;">${escapeHtml(group.customerName)}</strong>
+                          <span style="display:block;margin-top:2px;color:#52677a;font-size:11px;font-weight:900;">${escapeHtml(group.accountCode || "")}</span>
+                        </div>
+                        <div style="max-width:520px;text-align:right;color:#344054;font-weight:850;overflow-wrap:anywhere;">
+                          <span>${mailHtml}</span>
+                          <span style="display:inline-block;margin-left:8px;padding:3px 8px;border-radius:999px;background:#e7f8f5;color:#075e55;font-size:11px;font-weight:950;text-transform:uppercase;">${escapeHtml(documentCountLabel(group.documentCount))}</span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  ${(group.invoices || []).map((invoice) => `
+                    <tr>
+                      <td style="width:42%;padding:7px 12px;background:#fbfdfd;border-bottom:1px solid #e8eff2;color:#10232b;"><strong>${escapeHtml(invoice.documentType)}</strong> ${escapeHtml(invoice.invoiceNumber || "")}</td>
+                      <td style="width:22%;padding:7px 12px;background:#fbfdfd;border-bottom:1px solid #e8eff2;color:#263943;">${escapeHtml(dateOnly(invoice.invoiceDate))}</td>
+                      <td style="width:22%;padding:7px 12px;background:#fbfdfd;border-bottom:1px solid #e8eff2;color:#10232b;text-align:right;white-space:nowrap;font-weight:900;">${escapeHtml(money(invoice.totalTtc))}</td>
+                      <td style="width:14%;padding:7px 12px;background:#fbfdfd;border-bottom:1px solid #e8eff2;color:#52677a;text-align:right;">Simulation</td>
+                    </tr>
+                  `).join("")}
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        `;
+      }
+      async function openPendingDispatchPreview() {
+        const button = document.querySelector("#pending-dispatch-button");
+        button.disabled = true;
+        button.textContent = "Simulation...";
+        try {
+          const response = await fetch("/client-api/invoices/pending-dispatch-preview");
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || "Simulation impossible.");
+          state.dispatchPreview = payload;
+          renderDispatchPreview(payload);
+          document.querySelector("#invoice-dispatch-modal").hidden = false;
+          document.body.classList.add("modal-open");
+        } catch (error) {
+          renderDispatchPreview({ totalCustomers: 0, totalDocuments: 0, groups: [] });
+          document.querySelector("#invoice-dispatch-list").innerHTML = `<div class="invoice-dispatch-empty">${escapeHtml(error.message)}</div>`;
+          document.querySelector("#invoice-dispatch-modal").hidden = false;
+          document.body.classList.add("modal-open");
+        } finally {
+          button.disabled = false;
+          button.textContent = "Envoyer les factures en attente";
+        }
+      }
+      async function sendTestInvoices() {
+        const button = document.querySelector("#send-test-invoices-button");
+        const status = document.querySelector("#invoice-dispatch-status");
+        button.disabled = true;
+        button.textContent = "Envoi...";
+        status.hidden = false;
+        status.className = "invoice-dispatch-status";
+        status.textContent = "Preparation de l'envoi test vers jurgielewicz.mikael@orange.fr...";
+        try {
+          const response = await fetch("/client-api/invoices/test-dispatch", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ actor: actorInput.value.trim(), limit: 4, test: true }),
+          });
+          const payload = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(payload.error || "Envoi test impossible.");
+          const dispatch = payload.dispatch || {};
+          status.className = `invoice-dispatch-status ${dispatch.status === "failed" ? "error" : "success"}`;
+          const actionLabel = dispatch.status === "sent" ? "envoye(s)" : dispatch.status === "failed" ? "en echec" : dispatch.status === "skipped" ? "ignore(s)" : "prepare(s)";
+          status.innerHTML = `
+            <strong>${escapeHtml(dispatch.documentCount || 0)} document(s) ${escapeHtml(actionLabel)}</strong>
+            <span>Destinataire test : ${escapeHtml(dispatch.recipientEmail || "")}</span>
+            <span>${escapeHtml(dispatch.technicalMessage || "Historique d'envoi enregistre.")}</span>
+            <span>Le statut envoye client n'a pas ete modifie.</span>
+          `;
+        } catch (error) {
+          status.className = "invoice-dispatch-status error";
+          status.textContent = error.message;
+        } finally {
+          button.disabled = false;
+          button.textContent = "Envoyer les factures";
+        }
+      }
+      function renderShipmentPreview(shipment) {
+        const value = (label, content) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(content || "")}</strong></div>`;
+        document.querySelector("#shipment-preview-title").textContent = `Expedition ${shipment.receiptNo || ""}`;
+        document.querySelector("#shipment-preview-body").innerHTML = `
+          <section class="readonly-shipment-grid">
+            ${value("Recepisse", shipment.receiptNo)}
+            ${value("Produit", shipment.productCode)}
+            ${value("Statut", shipment.status)}
+            ${value("Facture", shipment.invoiceNumber)}
+            ${value("Client", shipment.customerName || shipment.customerCode)}
+            ${value("Payeur", shipment.payerName || shipment.payerCode)}
+            ${value("Depart", [shipment.senderName, shipment.senderPostalCode, shipment.senderCity].filter(Boolean).join(" - "))}
+            ${value("Arrivee", [shipment.recipientName, shipment.recipientPostalCode, shipment.recipientCity].filter(Boolean).join(" - "))}
+            ${value("Date depart", dateOnly(shipment.departureDate))}
+            ${value("Colis", shipment.parcels)}
+            ${value("Poids", shipment.weight)}
+            ${value("Montant HT", money(shipment.transportAmount))}
+            ${value("TVA", money(shipment.vatAmount))}
+            ${value("Prix convenu", money(shipment.agreedPrice))}
+          </section>
+        `;
+      }
+      async function openShipmentPreview(id) {
+        const response = await fetch(`/client-api/shipments/${encodeURIComponent(id)}`);
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) return;
+        renderShipmentPreview(payload.shipment || {});
+        document.querySelector("#invoice-shipment-modal").hidden = false;
+        document.body.classList.add("modal-open");
+      }
+      async function openInvoiceDocumentPreview(id) {
+        const response = await fetch(`/client-api/invoices/${encodeURIComponent(id)}`);
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) return;
+        state.selectedId = id;
+        state.linesByInvoice.set(String(id), payload.lines || []);
+        renderInvoiceDocument(payload.invoice || {}, payload.lines || [], payload.lineTotals || {});
+        document.querySelector("#invoice-document-modal").hidden = false;
+        document.body.classList.add("modal-open");
+      }
+      ["invoice-search", "date-from", "date-to", "invoice-status"].forEach((id) => document.querySelector(`#${id}`).addEventListener("input", loadInvoices));
+      document.querySelector("#pending-dispatch-button").addEventListener("click", openPendingDispatchPreview);
+      document.querySelector("#send-test-invoices-button").addEventListener("click", sendTestInvoices);
+      document.querySelector("#export-invoices-button").addEventListener("click", exportInvoices);
+      document.querySelector("#refresh-button").addEventListener("click", loadInvoices);
+      document.querySelector("#invoices-body").addEventListener("click", (event) => {
+        const invoiceButton = event.target.closest("[data-invoice-preview]");
+        if (invoiceButton) {
+          event.stopPropagation();
+          openInvoiceDocumentPreview(invoiceButton.dataset.invoicePreview);
+          return;
+        }
+        const button = event.target.closest("[data-shipment-preview]");
+        if (!button) return;
+        event.stopPropagation();
+        openShipmentPreview(button.dataset.shipmentPreview);
+      });
+      document.querySelectorAll("[data-close-shipment]").forEach((target) => target.addEventListener("click", closeShipmentPreview));
+      document.querySelectorAll("[data-close-dispatch]").forEach((target) => target.addEventListener("click", closeDispatchPreview));
+      document.querySelectorAll("[data-close-invoice-document]").forEach((target) => target.addEventListener("click", closeInvoiceDocumentPreview));
+      document.querySelector("#print-invoice-button").addEventListener("click", () => window.print());
+      hydrateCurrentStaff();
+      loadInvoices().catch((error) => document.querySelector("#invoices-body").innerHTML = `<tr><td colspan="9" class="empty-row">${escapeHtml(error.message)}</td></tr>`);
+    </script>
+  </body>
+</html>

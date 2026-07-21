@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Connexion</title>
+    <link rel="stylesheet" href="auth.css">
+  </head>
+  <body>
+    <main class="auth-shell client-theme">
+      <section class="auth-frame" aria-label="Connexion client MyTracking">
+        <aside class="brand-panel">
+          <div class="brand-mark">
+            <span class="brand-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 8h10v8H4zM14 10h3l3 3v3h-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M7 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+            </span>
+            <span>MyTracking</span>
+          </div>
+
+          <div class="brand-copy">
+            <p class="eyebrow">Espace client</p>
+            <h1>Piloter les expeditions.</h1>
+            <p>Acces exploitation, affretement, facturation et suivi terrain dans un environnement separe par societe et par agence.</p>
+          </div>
+
+          <div class="signal-strip" aria-label="Indicateurs client">
+            <div class="signal">
+              <span>Exploitation</span>
+              <strong>live</strong>
+            </div>
+            <div class="signal">
+              <span>Mobile</span>
+              <strong>offline</strong>
+            </div>
+            <div class="signal">
+              <span>Agences</span>
+              <strong>filtrees</strong>
+            </div>
+          </div>
+        </aside>
+
+        <section class="form-panel">
+          <div class="login-card">
+            <header>
+              <p class="access-kicker">Portail societe</p>
+              <h2>Acces client</h2>
+              <p>Votre email identifie automatiquement votre societe, vos agences et vos profils metier.</p>
+            </header>
+
+            <form>
+              <div class="field-group">
+                <div class="field">
+                  <label for="client-email">Email professionnel</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                      <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <input id="client-email" type="email" autocomplete="email" placeholder="prenom.nom@societe.fr">
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="client-password">Mot de passe</label>
+                  <div class="input-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                      <path d="M6 11h12v9H6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                    <input id="client-password" type="password" autocomplete="current-password" placeholder="Votre mot de passe">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="checkline">
+                  <input type="checkbox">
+                  <span>Rester connecte</span>
+                </label>
+                <a class="text-link" href="#">Mot de passe oublie</a>
+              </div>
+
+              <button class="primary-button" type="button">
+                Entrer dans MyTracking
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </form>
+
+            <div class="security-note">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M8 12h8M12 8v8M4 4h16v16H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Aucun code societe a saisir : le rattachement est gere automatiquement a partir de votre compte.</span>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

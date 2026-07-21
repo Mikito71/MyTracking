@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Admin - Configuration societe</title>
+    <link rel="stylesheet" href="auth.css">
+  </head>
+  <body>
+    <main class="admin-app">
+      <header class="admin-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="../assets/mytracking-logo.svg" alt="MyTracking Admin">
+        </div>
+        <div class="admin-user">mikael.jurgielewicz@cw2s.fr</div>
+      </header>
+
+      <div class="admin-layout">
+        <nav class="admin-sidebar" aria-label="Navigation admin">
+          <a class="active" href="index.html">Societes</a>
+          <a href="#">Provisioning</a>
+          <a href="#">Imports WinDev</a>
+          <a href="#">Utilisateurs</a>
+          <a href="#">Journal</a>
+        </nav>
+
+        <section class="admin-content">
+          <div class="page-head">
+            <div>
+              <p class="access-kicker" id="page-kicker">Configuration tenant</p>
+              <h1 id="page-title">Nouvelle societe cliente</h1>
+              <p id="page-subtitle">Creer la fiche plateforme, verifier les informations legales depuis SIRET/Kbis, puis preparer les premiers acces du personnel.</p>
+            </div>
+            <button class="secondary-button page-action" type="button" onclick="window.location.href='index.html'">Retour liste</button>
+          </div>
+
+          <div class="admin-grid">
+            <div>
+              <section class="admin-section">
+                <div class="section-head">
+                  <h2>Informations societe</h2>
+                  <p>Le code societe sert a l'administration et aux migrations, pas a la connexion client.</p>
+                </div>
+                <form class="admin-form">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="company-name">Nom societe</label>
+                      <input id="company-name" type="text" placeholder="Transports Martin">
+                    </div>
+                    <div class="field">
+                      <label for="company-code">Code interne</label>
+                      <input id="company-code" type="text" placeholder="TRM">
+                    </div>
+                    <div class="field">
+                      <label for="legacy-id">ID WinDev</label>
+                      <input id="legacy-id" type="text" inputmode="numeric" placeholder="Identifiant historique">
+                    </div>
+                    <div class="field">
+                      <label for="company-status">Statut</label>
+                      <select id="company-status">
+                        <option value="draft">Brouillon</option>
+                        <option value="migration">Migration</option>
+                        <option value="active">Actif</option>
+                        <option value="error">Erreur</option>
+                        <option value="suspended">Suspendu</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="siret">SIRET</label>
+                      <input id="siret" type="text" inputmode="numeric" placeholder="12345678900012">
+                    </div>
+                    <div class="field">
+                      <label for="creation-type">Type de creation</label>
+                      <select id="creation-type">
+                        <option>Nouvelle societe</option>
+                        <option>Reprise WinDev existante</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="contact-name">Contact principal</label>
+                      <input id="contact-name" type="text" placeholder="Nom du contact">
+                    </div>
+                    <div class="field">
+                      <label for="contact-email">Email contact</label>
+                      <input id="contact-email" type="email" placeholder="contact@societe.fr">
+                    </div>
+                    <div class="field full">
+                      <label for="address">Adresse</label>
+                      <input id="address" type="text" placeholder="Adresse du siege ou de l'etablissement principal">
+                    </div>
+                    <div class="field full">
+                      <label for="logo-url">Logo document</label>
+                      <input id="logo-url" type="text" placeholder="/assets/logo-client.svg">
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              <section class="admin-section">
+                <div class="section-head">
+                  <h2>Acces personnel</h2>
+                  <p>Chaque acces est rattache a la societe creee. Les profils pourront ensuite etre limites a une ou plusieurs agences.</p>
+                </div>
+                <div class="admin-form">
+                  <table class="access-table" aria-label="Acces personnel">
+                    <thead>
+                      <tr>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Profil</th>
+                        <th>Agence</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input type="text" placeholder="Responsable exploitation"></td>
+                        <td><input type="email" placeholder="exploitation@societe.fr"></td>
+                        <td>
+                          <select>
+                            <option>Exploitation</option>
+                            <option>Comptabilite</option>
+                            <option>Affretement</option>
+                            <option>Admin societe</option>
+                            <option>Chauffeur</option>
+                          </select>
+                        </td>
+                        <td><input type="text" placeholder="Toutes"></td>
+                      </tr>
+                      <tr>
+                        <td><input type="text" placeholder="Comptable"></td>
+                        <td><input type="email" placeholder="compta@societe.fr"></td>
+                        <td>
+                          <select>
+                            <option>Comptabilite</option>
+                            <option>Exploitation</option>
+                            <option>Affretement</option>
+                            <option>Admin societe</option>
+                            <option>Chauffeur</option>
+                          </select>
+                        </td>
+                        <td><input type="text" placeholder="Toutes"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button class="compact-button" type="button">Ajouter un acces</button>
+                </div>
+                <div class="action-row">
+                  <span class="form-status" id="form-status">Pret.</span>
+                  <button class="secondary-button" type="button" id="draft-button">Enregistrer brouillon</button>
+                  <button class="primary-button" type="button" id="save-company-button">Enregistrer</button>
+                </div>
+              </section>
+            </div>
+
+            <aside class="side-stack">
+              <section class="check-card">
+                <h3>Verification Kbis / SIRET</h3>
+                <p>La V1 pourra appeler l'API Sirene pour pre-remplir la fiche depuis le SIRET, puis l'admin validera avec le Kbis fourni.</p>
+                <div class="result-list">
+                  <div class="result-line">
+                    <span>Statut</span>
+                    <strong>A verifier</strong>
+                  </div>
+                  <div class="result-line">
+                    <span>Source</span>
+                    <strong>Sirene</strong>
+                  </div>
+                  <div class="result-line">
+                    <span>Kbis</span>
+                    <strong>Piece client</strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="check-card">
+                <h3>Base dediee</h3>
+                <p>Le provisioning creera une base PostgreSQL isolee pour cette societe.</p>
+                <div class="result-list">
+                  <div class="result-line">
+                    <span>Mode</span>
+                    <strong>Tenant dedie</strong>
+                  </div>
+                  <div class="result-line">
+                    <span>Etat</span>
+                    <strong>Non lance</strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="check-card sync-card">
+                <h3>Synchronisation WinDev</h3>
+                <p>Recharge la base beta depuis WinDev et ecrase les saisies effectuees dans la nouvelle version depuis la derniere synchro.</p>
+                <p class="sync-scope">Perimetre : societe, personnel, clients, expeditions, produits, affretes et contacts.</p>
+                <div class="sync-status compact" id="sync-status">Chargement du statut...</div>
+                <button class="danger-button" type="button" id="sync-button">Synchroniser WinDev</button>
+              </section>
+
+              <section class="check-card">
+                <h3>Regle acces client</h3>
+                <p>Les utilisateurs clients se connecteront avec leur email. Le rattachement societe sera deduit du compte.</p>
+              </section>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const companyId = params.get("id");
+      const statusBox = document.querySelector("#form-status");
+
+      function value(id) {
+        return document.querySelector(`#${id}`).value.trim();
+      }
+
+      function setValue(id, value) {
+        document.querySelector(`#${id}`).value = value || "";
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+      }
+
+      function payload(statusOverride = null) {
+        return {
+          name: value("company-name"),
+          code: value("company-code"),
+          legacyId: value("legacy-id"),
+          status: statusOverride || value("company-status") || "draft",
+          siret: value("siret"),
+          contactName: value("contact-name"),
+          contactEmail: value("contact-email"),
+          address1: value("address"),
+          logoUrl: value("logo-url"),
+        };
+      }
+
+      function fillCompany(company) {
+        setValue("company-name", company.name);
+        setValue("company-code", company.code);
+        setValue("legacy-id", company.legacyId);
+        setValue("company-status", company.status || "draft");
+        setValue("siret", company.siret);
+        setValue("contact-name", company.contactName);
+        setValue("contact-email", company.contactEmail || company.email);
+        setValue("address", [company.address1, company.address2, company.address3].filter(Boolean).join(" "));
+        setValue("logo-url", company.logoUrl);
+        document.querySelector("#page-title").textContent = `Configuration ${company.name}`;
+        document.querySelector("#page-subtitle").textContent = `Compte client ${company.code || ""} rattache a l'ID WinDev ${company.legacyId || "-"}.`;
+      }
+
+      function renderSyncStatus(payload) {
+        const last = payload.runs?.[0];
+        const configured = payload.configured ? "configuree" : "non configuree";
+        const title = payload.running ? "Synchronisation en cours" : "Prete";
+        document.querySelector("#sync-status").innerHTML = `
+          <strong>${title}</strong>
+          <span>${escapeHtml(payload.summary || "Aucune synchronisation lancee.")}</span>
+          <span>Commande ${configured}</span>
+          <span>Derniere execution : ${last ? `${last.status} le ${new Date(last.finishedAt || last.startedAt).toLocaleString("fr-FR")}${last.durationMs ? ` · ${Math.round(last.durationMs / 1000)} s` : ""}` : "aucune"}</span>
+          ${last?.errorMessage ? `<span class="sync-error">${escapeHtml(last.errorMessage)}</span>` : ""}
+          ${last?.outputTail ? `<details><summary>Voir le retour technique</summary><pre>${escapeHtml(last.outputTail)}</pre></details>` : ""}
+          ${payload.runs?.length ? `<details><summary>Historique des synchros</summary>${payload.runs.map((run) => `<span>${escapeHtml(run.status)} · ${new Date(run.finishedAt || run.startedAt).toLocaleString("fr-FR")} · ${escapeHtml(run.triggeredBy || "-")}</span>`).join("")}</details>` : ""}
+        `;
+        const button = document.querySelector("#sync-button");
+        button.disabled = payload.running;
+        button.textContent = payload.running ? "Synchronisation..." : "Synchroniser WinDev";
+      }
+
+      async function loadSyncStatus() {
+        const response = await fetch("/admin/api/windev-sync", { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          document.querySelector("#sync-status").innerHTML = "<strong>Statut indisponible</strong><span>Session admin expiree ou API indisponible.</span>";
+          document.querySelector("#sync-button").disabled = true;
+          return;
+        }
+        renderSyncStatus(await response.json());
+      }
+
+      async function startSync() {
+        const confirmation = window.prompt("Cette action ecrase les saisies beta et recharge depuis WinDev. Tape SYNCHRONISER WINDEV pour confirmer.");
+        if (confirmation !== "SYNCHRONISER WINDEV") return;
+        const button = document.querySelector("#sync-button");
+        button.disabled = true;
+        document.querySelector("#sync-status").textContent = "Demarrage de la synchronisation...";
+        const response = await fetch("/admin/api/windev-sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ confirmation, actor: "admin beta", commandLabel: "windev-production-to-beta" }),
+        });
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          document.querySelector("#sync-status").innerHTML = `<strong>Synchronisation non lancee</strong><span class="sync-error">${payload.error || "Erreur inconnue"}</span>`;
+          await loadSyncStatus();
+          return;
+        }
+        renderSyncStatus({ configured: true, running: true, runs: [payload.run] });
+        window.setTimeout(loadSyncStatus, 2500);
+      }
+
+      async function loadCompany() {
+        if (!companyId) return;
+        const response = await fetch(`/admin/api/companies/${companyId}`, { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          statusBox.textContent = "Societe introuvable ou session expiree.";
+          return;
+        }
+        const data = await response.json();
+        fillCompany(data.company);
+      }
+
+      async function saveCompany(statusOverride = null) {
+        statusBox.textContent = "Enregistrement...";
+        const response = await fetch(companyId ? `/admin/api/companies/${companyId}` : "/admin/api/companies", {
+          method: companyId ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload(statusOverride)),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          statusBox.textContent = data.error || "Enregistrement impossible.";
+          return;
+        }
+        statusBox.textContent = "Configuration enregistree.";
+        if (!companyId && data.company?.id) window.history.replaceState(null, "", `create-company.html?id=${data.company.id}`);
+      }
+
+      document.querySelector("#draft-button").addEventListener("click", () => saveCompany("draft"));
+      document.querySelector("#save-company-button").addEventListener("click", () => saveCompany());
+      document.querySelector("#sync-button").addEventListener("click", startSync);
+      loadCompany();
+      loadSyncStatus();
+    </script>
+  </body>
+</html>

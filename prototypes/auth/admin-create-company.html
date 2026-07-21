@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Admin - Creation societe</title>
+    <link rel="stylesheet" href="auth.css">
+  </head>
+  <body>
+    <main class="admin-app">
+      <header class="admin-topbar">
+        <div class="brand-mark">
+          <span class="brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h16M6 7v11h12V7M9 11h6M9 15h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>MyTracking Admin</span>
+        </div>
+        <div class="admin-user">mikael.jurgielewicz@cw2s.fr</div>
+      </header>
+
+      <div class="admin-layout">
+        <nav class="admin-sidebar" aria-label="Navigation admin">
+          <a class="active" href="index.html">Societes</a>
+          <a href="#">Provisioning</a>
+          <a href="#">Imports WinDev</a>
+          <a href="#">Utilisateurs</a>
+          <a href="#">Journal</a>
+        </nav>
+
+        <section class="admin-content">
+          <div class="page-head">
+            <div>
+              <p class="access-kicker">Creation tenant</p>
+              <h1>Nouvelle societe cliente</h1>
+              <p>Creer la fiche plateforme, verifier les informations legales depuis SIRET/Kbis, puis preparer les premiers acces du personnel.</p>
+            </div>
+            <button class="secondary-button page-action" type="button" onclick="window.location.href='index.html'">Retour liste</button>
+          </div>
+
+          <div class="admin-grid">
+            <div>
+              <section class="admin-section">
+                <div class="section-head">
+                  <h2>Informations societe</h2>
+                  <p>Le code societe sert a l'administration et aux migrations, pas a la connexion client.</p>
+                </div>
+                <form class="admin-form">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="company-name">Nom societe</label>
+                      <input id="company-name" type="text" placeholder="Transports Martin">
+                    </div>
+                    <div class="field">
+                      <label for="company-code">Code interne</label>
+                      <input id="company-code" type="text" placeholder="TRM">
+                    </div>
+                    <div class="field">
+                      <label for="siret">SIRET</label>
+                      <input id="siret" type="text" inputmode="numeric" placeholder="12345678900012">
+                    </div>
+                    <div class="field">
+                      <label for="creation-type">Type de creation</label>
+                      <select id="creation-type">
+                        <option>Nouvelle societe</option>
+                        <option>Reprise WinDev existante</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="contact-name">Contact principal</label>
+                      <input id="contact-name" type="text" placeholder="Nom du contact">
+                    </div>
+                    <div class="field">
+                      <label for="contact-email">Email contact</label>
+                      <input id="contact-email" type="email" placeholder="contact@societe.fr">
+                    </div>
+                    <div class="field full">
+                      <label for="address">Adresse</label>
+                      <input id="address" type="text" placeholder="Adresse du siege ou de l'etablissement principal">
+                    </div>
+                  </div>
+                </form>
+              </section>
+
+              <section class="admin-section">
+                <div class="section-head">
+                  <h2>Acces personnel</h2>
+                  <p>Chaque acces est rattache a la societe creee. Les profils pourront ensuite etre limites a une ou plusieurs agences.</p>
+                </div>
+                <div class="admin-form">
+                  <table class="access-table" aria-label="Acces personnel">
+                    <thead>
+                      <tr>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Profil</th>
+                        <th>Agence</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><input type="text" placeholder="Responsable exploitation"></td>
+                        <td><input type="email" placeholder="exploitation@societe.fr"></td>
+                        <td>
+                          <select>
+                            <option>Exploitation</option>
+                            <option>Comptabilite</option>
+                            <option>Affretement</option>
+                            <option>Admin societe</option>
+                            <option>Chauffeur</option>
+                          </select>
+                        </td>
+                        <td><input type="text" placeholder="Toutes"></td>
+                      </tr>
+                      <tr>
+                        <td><input type="text" placeholder="Comptable"></td>
+                        <td><input type="email" placeholder="compta@societe.fr"></td>
+                        <td>
+                          <select>
+                            <option>Comptabilite</option>
+                            <option>Exploitation</option>
+                            <option>Affretement</option>
+                            <option>Admin societe</option>
+                            <option>Chauffeur</option>
+                          </select>
+                        </td>
+                        <td><input type="text" placeholder="Toutes"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button class="compact-button" type="button">Ajouter un acces</button>
+                </div>
+                <div class="action-row">
+                  <button class="secondary-button" type="button">Enregistrer brouillon</button>
+                  <button class="primary-button" type="button">Creer la societe</button>
+                </div>
+              </section>
+            </div>
+
+            <aside class="side-stack">
+              <section class="check-card">
+                <h3>Verification Kbis / SIRET</h3>
+                <p>La V1 pourra appeler l'API Sirene pour pre-remplir la fiche depuis le SIRET, puis l'admin validera avec le Kbis fourni.</p>
+                <div class="result-list">
+                  <div class="result-line">
+                    <span>Statut</span>
+                    <strong>A verifier</strong>
+                  </div>
+                  <div class="result-line">
+                    <span>Source</span>
+                    <strong>Sirene</strong>
+                  </div>
+                  <div class="result-line">
+                    <span>Kbis</span>
+                    <strong>Piece client</strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="check-card">
+                <h3>Base dediee</h3>
+                <p>Le provisioning creera une base PostgreSQL isolee pour cette societe.</p>
+                <div class="result-list">
+                  <div class="result-line">
+                    <span>Mode</span>
+                    <strong>Tenant dedie</strong>
+                  </div>
+                  <div class="result-line">
+                    <span>Etat</span>
+                    <strong>Non lance</strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="check-card">
+                <h3>Regle acces client</h3>
+                <p>Les utilisateurs clients se connecteront avec leur email. Le rattachement societe sera deduit du compte.</p>
+              </section>
+            </aside>
+          </div>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>

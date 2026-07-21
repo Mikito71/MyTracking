@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Statistiques</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="client-ui.css?v=20260710-04">
+  </head>
+  <body>
+    <main class="client-app premium-client-app">
+      <header class="client-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking">
+        </div>
+        <nav class="client-nav" aria-label="Navigation client">
+          <a href="client-customers.html" aria-label="Clients">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h10v10H4zM14 10h3l3 3v4h-6zM7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <span>Clients</span>
+          </a>
+          <a class="active" href="client-staff.html" aria-label="Personnel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0ZM4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Personnel</span>
+          </a>
+          <a href="client-shipments.html" aria-label="Expeditions">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Expeditions</span>
+          </a>
+          <a href="client-invoices.html" aria-label="Facturation">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h10v18l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V3ZM9.5 8h5M9.5 12h5M9.5 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Facturation</span>
+          </a>
+          <a href="#" aria-label="Documents">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Documents</span>
+          </a>
+        </nav>
+        <div class="client-user">
+          <label for="actor-name">Utilisateur</label>
+          <input id="actor-name" type="text" value="Client SGA">
+        </div>
+      </header>
+
+      <div class="client-layout">
+        <section class="client-content">
+          <div class="client-page-head analytics-head">
+            <div>
+              <p class="access-kicker">SGA</p>
+              <h1>Performance</h1>
+              <p class="client-subtitle">Marges, chiffre et activite par personnel et client.</p>
+            </div>
+            <div class="client-actions">
+              <a class="secondary-button page-action" href="client-staff.html">Personnel</a>
+              <button class="primary-button page-action" type="button" id="refresh-button">Actualiser</button>
+            </div>
+          </div>
+
+          <section class="analytics-filterbar">
+            <div class="field">
+              <label for="period-preset">Periode</label>
+              <select id="period-preset">
+                <option value="current_month">Mois en cours</option>
+                <option value="current_week">Semaine en cours</option>
+                <option value="last_week">Semaine precedente</option>
+                <option value="today">Aujourd'hui</option>
+                <option value="last_7_days">7 derniers jours</option>
+                <option value="last_30_days">30 derniers jours</option>
+                <option value="last_month">Mois precedent</option>
+                <option value="current_year">Annee en cours</option>
+                <option value="custom">Libre</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="date-from">Du</label>
+              <input id="date-from" type="date">
+            </div>
+            <div class="field">
+              <label for="date-to">Au</label>
+              <input id="date-to" type="date">
+            </div>
+            <button class="primary-button page-action" type="button" id="apply-filter">Appliquer</button>
+          </section>
+
+          <section class="analytics-hero-grid">
+            <article class="margin-hero">
+              <span>Marge periode</span>
+              <strong id="hero-margin">0 EUR</strong>
+              <small id="hero-range">Mois en cours</small>
+              <div class="hero-delta" id="hero-delta">0 % vs periode precedente</div>
+            </article>
+            <article class="analytics-kpi">
+              <span>Chiffre</span>
+              <strong id="kpi-revenue">0 EUR</strong>
+              <small id="kpi-revenue-delta">0 %</small>
+            </article>
+            <article class="analytics-kpi">
+              <span>Achat affrete</span>
+              <strong id="kpi-purchase">0 EUR</strong>
+              <small id="kpi-margin-rate">0 % marge</small>
+            </article>
+            <article class="analytics-kpi">
+              <span>Expeditions</span>
+              <strong id="kpi-shipments">0</strong>
+              <small id="kpi-shipments-delta">0 %</small>
+            </article>
+          </section>
+
+          <section class="analytics-grid">
+            <article class="analytics-panel staff-panel">
+              <header>
+                <div>
+                  <span>Personnel</span>
+                  <h2>Marge realisee</h2>
+                </div>
+                <strong id="staff-total-label">0 EUR</strong>
+              </header>
+              <div class="staff-combo">
+                <div class="staff-performance" id="staff-performance"></div>
+                <div class="staff-share">
+                  <div class="donut" id="staff-donut"></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="analytics-panel">
+              <header>
+                <div>
+                  <span>Progression</span>
+                  <h2 id="trend-title">Comparaison periodes</h2>
+                </div>
+                <button class="mini-action" type="button" id="clear-staff-filter" hidden>Equipe complete</button>
+              </header>
+              <div class="chart-wrap" id="trend-chart"></div>
+            </article>
+
+            <article class="analytics-panel">
+              <header>
+                <div>
+                  <span>Clients</span>
+                  <h2>Plus d'expeditions</h2>
+                </div>
+              </header>
+              <div class="rank-list" id="top-shipments"></div>
+            </article>
+
+            <article class="analytics-panel">
+              <header>
+                <div>
+                  <span>Clients</span>
+                  <h2>Meilleur chiffre</h2>
+                </div>
+              </header>
+              <div class="rank-list" id="top-revenue"></div>
+            </article>
+
+            <article class="analytics-panel compact-panel product-panel">
+              <header>
+                <div>
+                  <span>Produit</span>
+                  <h2>Volumes</h2>
+                </div>
+              </header>
+              <div class="donut-layout">
+                <div class="donut" id="product-donut"></div>
+                <div class="legend-list" id="product-legend"></div>
+              </div>
+            </article>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const colors = ["#f6b51e", "#0f766e", "#2563eb", "#dc2626", "#7c3aed", "#475569"];
+      const state = { analytics: null, selectedCreator: "" };
+      const actorInput = document.querySelector("#actor-name");
+      actorInput.value = localStorage.getItem("mytrackingActor") || actorInput.value;
+      actorInput.addEventListener("input", () => localStorage.setItem("mytrackingActor", actorInput.value.trim()));
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+
+      function iso(date) {
+        const copy = new Date(date.getTime());
+        copy.setMinutes(copy.getMinutes() - copy.getTimezoneOffset());
+        return copy.toISOString().slice(0, 10);
+      }
+
+      function weekBounds(date) {
+        const day = date.getDay() || 7;
+        const from = new Date(date);
+        from.setDate(date.getDate() - day + 1);
+        const to = new Date(from);
+        to.setDate(from.getDate() + 6);
+        return { from, to };
+      }
+
+      function setPresetDates() {
+        const preset = document.querySelector("#period-preset").value;
+        if (preset === "custom") return;
+        const today = new Date();
+        let from = new Date(today);
+        let to = new Date(today);
+        if (preset === "current_month") {
+          from = new Date(today.getFullYear(), today.getMonth(), 1);
+          to = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        } else if (preset === "current_week") {
+          ({ from, to } = weekBounds(today));
+        } else if (preset === "last_week") {
+          const previous = new Date(today);
+          previous.setDate(today.getDate() - 7);
+          ({ from, to } = weekBounds(previous));
+        } else if (preset === "last_7_days") {
+          from.setDate(today.getDate() - 6);
+        } else if (preset === "last_30_days") {
+          from.setDate(today.getDate() - 29);
+        } else if (preset === "last_month") {
+          from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+          to = new Date(today.getFullYear(), today.getMonth(), 0);
+        } else if (preset === "current_year") {
+          from = new Date(today.getFullYear(), 0, 1);
+          to = new Date(today.getFullYear(), 11, 31);
+        }
+        document.querySelector("#date-from").value = iso(from);
+        document.querySelector("#date-to").value = iso(to);
+      }
+
+      function formatMoney(value) {
+        return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(Number(value || 0));
+      }
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat("fr-FR").format(Number(value || 0));
+      }
+
+      function percentDelta(current, previous) {
+        if (!previous && !current) return 0;
+        if (!previous) return 100;
+        return ((current - previous) / Math.abs(previous)) * 100;
+      }
+
+      function setDelta(selector, current, previous, suffix = "%") {
+        const delta = percentDelta(current, previous);
+        const node = document.querySelector(selector);
+        node.textContent = `${delta >= 0 ? "+" : ""}${delta.toFixed(1)} ${suffix} vs periode precedente`;
+        node.className = delta >= 0 ? "delta-up" : "delta-down";
+      }
+
+      function renderStaff(items) {
+        const target = document.querySelector("#staff-performance");
+        const max = Math.max(...items.map((item) => Math.abs(item.margin)), 1);
+        target.innerHTML = items.map((item, index) => `
+          <button class="staff-bar-row ${state.selectedCreator === item.creator ? "active" : ""}" type="button" data-creator="${escapeHtml(item.creator)}">
+            <div>
+              <strong>${escapeHtml(item.name)}</strong>
+              <span>${formatNumber(item.shipments)} exp. | CA ${formatMoney(item.revenue)} | ${item.marginRate.toFixed(1)} %</span>
+            </div>
+            <em>${formatMoney(item.margin)}</em>
+            <i style="--bar:${Math.max(4, Math.abs(item.margin) / max * 100)}%;--tone:${colors[index % colors.length]}"></i>
+          </button>
+        `).join("") || '<div class="empty-row">Aucune donnee sur cette periode.</div>';
+        target.querySelectorAll(".staff-bar-row").forEach((button) => {
+          button.addEventListener("click", () => selectStaffTrend(button.dataset.creator));
+        });
+      }
+
+      function piePath(cx, cy, r, start, end) {
+        const startX = cx + r * Math.cos(start);
+        const startY = cy + r * Math.sin(start);
+        const endX = cx + r * Math.cos(end);
+        const endY = cy + r * Math.sin(end);
+        const large = end - start > Math.PI ? 1 : 0;
+        return `M ${cx} ${cy} L ${startX} ${startY} A ${r} ${r} 0 ${large} 1 ${endX} ${endY} Z`;
+      }
+
+      function renderDonut(containerId, legendId, rows, valueKey = "value", labelKey = "label", formatter = formatNumber) {
+        const values = rows.map((row) => Math.max(0, Number(row[valueKey] || 0)));
+        const total = values.reduce((sum, value) => sum + value, 0);
+        const container = document.querySelector(containerId);
+        const legend = legendId ? document.querySelector(legendId) : null;
+        if (!total) {
+          container.innerHTML = '<div class="empty-chart">0</div>';
+          if (legend) legend.innerHTML = "";
+          return;
+        }
+        let angle = -Math.PI / 2;
+        const paths = rows.map((row, index) => {
+          const portion = values[index] / total;
+          const end = angle + portion * Math.PI * 2;
+          const path = `<path d="${piePath(60, 60, 52, angle, end)}" fill="${colors[index % colors.length]}"></path>`;
+          angle = end;
+          return path;
+        }).join("");
+        container.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true">${paths}<circle cx="60" cy="60" r="28" fill="#fff"></circle></svg>`;
+        if (!legend) return;
+        legend.innerHTML = rows.map((row, index) => `
+          <div>
+            <i style="background:${colors[index % colors.length]}"></i>
+            <span>${escapeHtml(row[labelKey] || row.name)}</span>
+            <strong>${formatter(row[valueKey])}</strong>
+            <small>${((Number(row[valueKey] || 0) / total) * 100).toFixed(1)} %</small>
+          </div>
+        `).join("");
+      }
+
+      function renderTrend(rows) {
+        const target = document.querySelector("#trend-chart");
+        if (!rows.length) {
+          target.innerHTML = '<div class="empty-row">Aucune comparaison disponible.</div>';
+          return;
+        }
+        const width = 720;
+        const height = 260;
+        const pad = { left: 68, right: 18, top: 20, bottom: 44 };
+        const max = Math.max(...rows.map((row) => Math.max(row.revenue, row.margin)), 1);
+        const x = (index) => pad.left + (rows.length === 1 ? 0 : index * ((width - pad.left - pad.right) / (rows.length - 1)));
+        const y = (value) => height - pad.bottom - (value / max) * (height - pad.top - pad.bottom);
+        const line = (key) => rows.map((row, index) => `${index ? "L" : "M"} ${x(index).toFixed(1)} ${y(row[key]).toFixed(1)}`).join(" ");
+        const ticks = [0, 0.5, 1].map((ratio) => {
+          const value = max * ratio;
+          const tickY = y(value);
+          return `
+            <path d="M ${pad.left} ${tickY.toFixed(1)} H ${width - pad.right}" stroke="#e3eaee" stroke-width="1"></path>
+            <text x="${pad.left - 10}" y="${(tickY + 4).toFixed(1)}" text-anchor="end">${formatMoney(value)}</text>
+          `;
+        }).join("");
+        const labelStep = Math.max(1, Math.ceil(rows.length / 6));
+        const shortPeriodLabel = (row) => {
+          if (row.dateFrom && row.dateTo) {
+            const from = new Date(row.dateFrom).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+            const to = new Date(row.dateTo).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+            return from === to ? from : `${from} au ${to}`;
+          }
+          return row.label || new Date(row.day).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+        };
+        const fullPeriodLabel = (row) => row.label || shortPeriodLabel(row);
+        const xLabels = rows.map((row, index) => {
+          if (index % labelStep !== 0 && index !== rows.length - 1) return "";
+          return `<text x="${x(index).toFixed(1)}" y="${height - 14}" text-anchor="middle">${escapeHtml(shortPeriodLabel(row))}</text>`;
+        }).join("");
+        const bars = rows.map((row, index) => {
+          const barHeight = Math.max(2, height - pad.bottom - y(row.margin));
+          const label = `${fullPeriodLabel(row)} - ${formatNumber(row.shipments)} exp. - Chiffre ${formatMoney(row.revenue)} - Marge ${formatMoney(row.margin)}`;
+          return `<rect class="trend-hover" x="${x(index) - 6}" y="${height - pad.bottom - barHeight}" width="12" height="${barHeight}" fill="#f6b51e" opacity="0.72"><title>${escapeHtml(label)}</title></rect>`;
+        }).join("");
+        const points = rows.map((row, index) => {
+          const label = `${fullPeriodLabel(row)} - ${formatNumber(row.shipments)} exp. - Chiffre ${formatMoney(row.revenue)} - Marge ${formatMoney(row.margin)}`;
+          const pointX = x(index).toFixed(1);
+          return `
+            <g class="trend-point">
+              <circle cx="${pointX}" cy="${y(row.revenue).toFixed(1)}" r="12" fill="transparent"><title>${escapeHtml(label)}</title></circle>
+              <circle cx="${pointX}" cy="${y(row.revenue).toFixed(1)}" r="4.5" fill="#0f766e"><title>${escapeHtml(label)}</title></circle>
+            </g>
+            <g class="trend-point">
+              <circle cx="${pointX}" cy="${y(row.margin).toFixed(1)}" r="12" fill="transparent"><title>${escapeHtml(label)}</title></circle>
+              <circle cx="${pointX}" cy="${y(row.margin).toFixed(1)}" r="4.5" fill="#132126"><title>${escapeHtml(label)}</title></circle>
+            </g>
+          `;
+        }).join("");
+        const totalRevenue = rows.reduce((sum, row) => sum + Number(row.revenue || 0), 0);
+        const totalMargin = rows.reduce((sum, row) => sum + Number(row.margin || 0), 0);
+        target.innerHTML = `
+          <svg class="trend-svg" viewBox="0 0 ${width} ${height}" aria-label="Evolution">
+            <g class="chart-axis">${ticks}${xLabels}</g>
+            <path d="M ${pad.left} ${height - pad.bottom} H ${width - pad.right}" stroke="#cfdbe1" stroke-width="1"></path>
+            ${bars}
+            <path d="${line("revenue")}" fill="none" stroke="#0f766e" stroke-width="3"></path>
+            <path d="${line("margin")}" fill="none" stroke="#132126" stroke-width="3"></path>
+            ${points}
+          </svg>
+          <div class="trend-legend">
+            <span><i class="teal"></i>Chiffre <strong>${formatMoney(totalRevenue)}</strong></span>
+            <span><i></i>Marge <strong>${formatMoney(totalMargin)}</strong></span>
+            <span><i class="gold"></i>Marge periode</span>
+          </div>
+        `;
+      }
+
+      function selectStaffTrend(creator) {
+        state.selectedCreator = state.selectedCreator === creator ? "" : creator;
+        loadAnalytics().catch((error) => alert(error.message));
+      }
+
+      function renderSelectedTrend() {
+        const analytics = state.analytics;
+        if (!analytics) return;
+        const selected = analytics.staff?.find((item) => item.creator === state.selectedCreator);
+        const clearButton = document.querySelector("#clear-staff-filter");
+        if (!selected) {
+          document.querySelector("#trend-title").textContent = "Comparaison periodes";
+          clearButton.hidden = true;
+          renderTrend(analytics.periodSeries || analytics.daily || []);
+          return;
+        }
+        document.querySelector("#trend-title").textContent = `Comparaison periodes - ${selected.name}`;
+        clearButton.hidden = false;
+        renderTrend(analytics.periodSeries || analytics.daily || []);
+      }
+
+      function renderRank(selector, rows, mode) {
+        const max = Math.max(...rows.map((item) => mode === "shipments" ? item.shipments : item.revenue), 1);
+        document.querySelector(selector).innerHTML = rows.map((item, index) => {
+          const value = mode === "shipments" ? item.shipments : item.revenue;
+          return `
+            <div class="rank-row">
+              <span>${index + 1}</span>
+              <div>
+                <strong>${escapeHtml(item.customer_name)}</strong>
+                <small>${escapeHtml(item.customer_code)} | ${formatNumber(item.shipments)} exp. | marge ${formatMoney(item.margin)}</small>
+                <i style="--bar:${Math.max(4, value / max * 100)}%"></i>
+              </div>
+              <em>${mode === "shipments" ? formatNumber(value) : formatMoney(value)}</em>
+            </div>
+          `;
+        }).join("") || '<div class="empty-row">Aucun client sur cette periode.</div>';
+      }
+
+      async function loadAnalytics() {
+        const dateFrom = document.querySelector("#date-from").value;
+        const dateTo = document.querySelector("#date-to").value;
+        const period = document.querySelector("#period-preset").value;
+        const params = new URLSearchParams({ dateFrom, dateTo, period });
+        if (state.selectedCreator) params.set("creator", state.selectedCreator);
+        const response = await fetch(`/client-api/analytics/performance?${params.toString()}`);
+        if (!response.ok) throw new Error("Chargement des statistiques impossible.");
+        const data = await response.json();
+        state.analytics = data;
+        if (state.selectedCreator && !(data.staff || []).some((item) => item.creator === state.selectedCreator)) {
+          state.selectedCreator = "";
+        }
+        document.querySelector("#hero-margin").textContent = formatMoney(data.totals.margin);
+        document.querySelector("#hero-range").textContent = `${new Date(data.range.dateFrom).toLocaleDateString("fr-FR")} au ${new Date(data.range.dateTo).toLocaleDateString("fr-FR")}`;
+        document.querySelector("#kpi-revenue").textContent = formatMoney(data.totals.revenue);
+        document.querySelector("#kpi-purchase").textContent = formatMoney(data.totals.purchase);
+        document.querySelector("#kpi-margin-rate").textContent = `${data.totals.marginRate.toFixed(1)} % marge`;
+        document.querySelector("#kpi-shipments").textContent = formatNumber(data.totals.shipments);
+        document.querySelector("#staff-total-label").textContent = formatMoney(data.totals.margin);
+        setDelta("#hero-delta", data.totals.margin, data.previousTotals.margin);
+        setDelta("#kpi-revenue-delta", data.totals.revenue, data.previousTotals.revenue);
+        setDelta("#kpi-shipments-delta", data.totals.shipments, data.previousTotals.shipments);
+        renderStaff(data.staff || []);
+        renderSelectedTrend();
+        renderDonut("#staff-donut", null, (data.staff || []).map((item) => ({ label: item.name, value: Math.max(0, item.margin) })), "value", "label", formatMoney);
+        renderDonut("#product-donut", "#product-legend", data.product || []);
+        renderRank("#top-shipments", data.topClientsByShipments || [], "shipments");
+        renderRank("#top-revenue", data.topClientsByRevenue || [], "revenue");
+      }
+
+      document.querySelector("#period-preset").addEventListener("change", () => {
+        setPresetDates();
+        loadAnalytics().catch((error) => alert(error.message));
+      });
+      document.querySelector("#apply-filter").addEventListener("click", () => {
+        document.querySelector("#period-preset").value = "custom";
+        loadAnalytics().catch((error) => alert(error.message));
+      });
+      document.querySelector("#clear-staff-filter").addEventListener("click", () => {
+        state.selectedCreator = "";
+        loadAnalytics().catch((error) => alert(error.message));
+      });
+      document.querySelector("#refresh-button").addEventListener("click", () => loadAnalytics().catch((error) => alert(error.message)));
+      setPresetDates();
+      loadAnalytics().catch((error) => {
+        document.querySelector("#staff-performance").innerHTML = `<div class="empty-row">${escapeHtml(error.message)}</div>`;
+      });
+    </script>
+  </body>
+</html>

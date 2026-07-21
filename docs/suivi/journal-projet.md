@@ -1,5 +1,66 @@
 # Journal projet
 
+## 2026-07-20 - Apercu facture SGA pagine
+
+### Action realisee
+
+Ajout d'un bouton de visualisation sur la table des factures beta.
+
+### Perimetre
+
+- Generation d'un apercu A4 proche de la trame facture SGA fournie.
+- Pagination automatique selon le nombre de lignes.
+- Les anciennes lignes de regroupement `Date Du` et `Total Date Du` ne sont plus affichees.
+- Impression navigateur disponible depuis l'apercu.
+
+### Alignement trame validee
+
+L'apercu facture de la page facturation reprend la trame facture SGA validee : en-tete agence, bloc facture/date/client/page, adresse client, tableau detail, total general, encart reglement/RIB et recapitulatif TVA. La pagination est alignee sur la generation PDF a `8` lignes par page.
+
+## 2026-07-20 - Statut d'envoi client des factures
+
+### Action realisee
+
+Ajout d'un statut d'envoi client sur les factures beta.
+
+### Regle metier
+
+- Les factures datees jusqu'au 30/06/2026 inclus sont initialisees a `envoyee client = oui`.
+- Les factures posterieures restent a `non` tant qu'aucun envoi client n'est trace.
+
+### Impact
+
+- La liste `/client-invoices.html` remplace la colonne technique `Fiscal` par `Envoyee client`.
+- Le filtre de statut facture devient un filtre Oui/Non sur l'envoi client.
+- Le KPI des factures scellees est remplace par le nombre de factures envoyees client.
+
+## 2026-07-20 - Simulation d'envoi des factures en attente
+
+### Action realisee
+
+Ajout d'un bouton de simulation `Envoyer les factures en attente` sur la page facturation beta.
+
+### Perimetre
+
+- Aucun email n'est envoye.
+- Aucune facture n'est marquee comme envoyee.
+- La fenetre affiche les documents en attente groupes par client.
+
+### Informations affichees
+
+- nom du client ;
+- emails destinataires connus (`Email facture`, `Email contact`, `Email`) ;
+- nombre de documents ;
+- liste des factures et avoirs a envoyer.
+
+### Verification OVH
+
+Endpoint de simulation teste sur beta : HTTP `200`, `76` clients et `92` documents en attente.
+
+### Ajustement interface
+
+La fenetre de simulation a ete compactee et rendue scrollable. Un indicateur attention est affiche pour les clients sans email destinataire renseigne. La version CSS de la page facturation a ete incrementee pour eviter le cache navigateur.
+
 ## 2026-07-05
 
 ### Evenement
@@ -538,6 +599,98 @@ https://mytracking-beta.51-210-14-228.sslip.io/admin/index.html
 - sans session : redirection vers `/admin/login.html` ;
 - apres connexion : redirection vers `/admin/index.html` ;
 - la page contient `Societes clientes`, `Nouveau`, `TransPlus Demo` et `Opentrans Affretement`.
+
+## 2026-07-10 - Installation driver HFSQL ODBC sur beta
+
+### Action realisee
+
+Installation du driver Linux officiel PC SOFT HFSQL ODBC 2026 sur le serveur beta MyTracking, dans le dossier separe `/opt/mytracking/hfsql-odbc/wx315010`.
+
+### Verification
+
+- driver `HFSQL` enregistre dans `/etc/odbcinst.ini` ;
+- dependances iODBC resolues ;
+- test iODBC hote reussi sur `SELECT COUNT(*) FROM Clients` ;
+- resultat source WinDev : `Clients=814`.
+
+### Integration applicative
+
+Le driver PC SOFT est lie a iODBC. Le service `admin-auth` beta a ete passe sur une image Debian compatible glibc, avec montage du driver et precontrole iODBC compile au demarrage.
+
+### Point d'attention
+
+La connexion HFSQL est verifiee depuis l'environnement applicatif.
+
+### Suite realisee
+
+Le bouton de synchronisation WinDev declenche maintenant une vraie synchronisation transactionnelle :
+
+- purge du perimetre SGA beta ;
+- import produits, affretes, contacts affretes, clients, expeditions et personnel ;
+- reconstruction des expediteurs client ;
+- rapport de comptage dans l'historique de synchro.
+
+Derniere execution beta : succes, `18562` expeditions, `814` clients, `3722` affretes, `4841` contacts affretes et `4` membres du personnel.
+
+### Livrable
+
+- `docs/architecture/hfsql-odbc-beta-installation-2026-07-10.md`
+
+## 2026-07-10 - Fiche personnel enrichie et test Utilisateur protege
+
+La fiche Personnel beta a ete etendue pour preparer la reprise des champs de `Utilisateur` : login, telephone, email, serveur SMTP, port, fichier HTML email, signature HTML et indicateur de mot de passe mail configure.
+
+Le mot de passe du fichier HFSQL protege a ete configure cote serveur beta hors depot. Test effectue : le driver ODBC HFSQL Linux continue de retourner `The Utilisateur data file is unknown` pour `Utilisateur`, meme apres tentative d'ouverture du fichier protege. Decision provisoire : conserver le fallback sur les createurs d'expeditions et prevoir un export WinDev ou un connecteur HFSQL capable d'ouvrir ce fichier protege.
+
+## 2026-07-11 - Import factures SGA et socle anti-fraude TVA
+
+### Action realisee
+
+Ajout du module de facturation beta depuis les tables WinDev `Facture_Entete` et `Facture_Detail`.
+
+### Resultat beta
+
+Derniere synchronisation reussie :
+
+- `3526` factures importees ;
+- `63490` lignes de facture importees ;
+- page client ajoutee : `/client-invoices.html` ;
+- API ajoutee : `/client-api/invoices` et `/client-api/invoices/:id`.
+
+### Preparation fiscale
+
+Ajout d'un socle technique pour preparer les contraintes francaises anti-fraude TVA :
+
+- hash de chaque facture importee ;
+- chainage avec le hash precedent ;
+- statut fiscal d'import ;
+- empreinte de la source WinDev ;
+- tables d'evenements fiscaux et de clotures.
+
+Cette implementation prepare l'inalterabilite, la securisation, la conservation et l'archivage pour les futurs flux SaaS. Elle ne vaut pas certification logicielle.
+
+### Livrable
+
+- `docs/architecture/import-factures-sga-beta-2026-07-11.md`
+
+## 2026-07-11 - Apercu confirmation d'affretement et preparation mail
+
+### Action realisee
+
+Depuis la liste des expeditions, le bouton de confirmation d'affretement ouvre maintenant un apercu en fenetre modale au-dessus de la page, sans nouvel onglet.
+
+### Fonctions ajoutees
+
+- apercu A4 embarque ;
+- impression depuis la modale ;
+- composition mail avec destinataire, copie, sujet et corps HTML ;
+- ajout automatique de la signature HTML du personnel retrouve depuis l'utilisateur courant ;
+- piece jointe logique `Confirmation d'affretement` ;
+- enregistrement de la demande d'envoi et trace dans l'historique expedition.
+
+### Point connu
+
+L'envoi SMTP reel reste a brancher avec des identifiants serveur securises. En l'absence de mot de passe SMTP exploitable cote serveur, la demande est enregistree au statut `prepared`.
 
 ## 2026-07-09 - Synthese fonctionnalites TMS et affretement
 

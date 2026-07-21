@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Confirmation d'affretement</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; background: #eef4f5; color: #000; font-family: Arial, Helvetica, sans-serif; }
+      .print-toolbar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: center; gap: 10px; padding: 12px; background: #0d1b1f; }
+      .print-toolbar button, .print-toolbar a { min-height: 38px; padding: 0 16px; border: 1px solid #334155; background: #f4b51c; color: #061018; font-weight: 800; text-decoration: none; cursor: pointer; }
+      .print-toolbar a { display: inline-flex; align-items: center; background: #263238; color: #fff; }
+      .page { width: 210mm; min-height: 297mm; margin: 18px auto; padding: 15mm 16mm 12mm; background: #fff; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18); font-size: 11px; line-height: 1.25; }
+      .doc-head { display: grid; grid-template-columns: 1fr 210px 1fr; align-items: start; gap: 14px; margin-bottom: 8px; }
+      .title { grid-column: 1 / 4; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; font-weight: 800; text-transform: uppercase; }
+      .title time { justify-self: end; }
+      .company, .accounting, .site-address { white-space: pre-line; }
+      .logo-box { text-align: center; }
+      .logo-box img { width: 190px; height: auto; }
+      .logo-box strong { display: block; color: #075da8; font-size: 19px; font-weight: 500; margin-top: -6px; }
+      .accounting { justify-self: end; min-width: 155px; }
+      .interlocutor { grid-column: 1 / 4; font-weight: 700; border-bottom: 1px solid #111; padding-bottom: 4px; }
+      .boxed { border: 1px solid #111; }
+      .carrier-header { display: grid; grid-template-columns: 1fr 170px; row-gap: 8px; padding: 10px 18px; margin-bottom: 7px; }
+      .two-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+      .site-box { min-height: 68mm; padding: 8px; }
+      .site-title { font-weight: 700; margin-bottom: 26px; }
+      .site-address { margin-left: 44px; min-height: 72px; }
+      .site-footer { margin-top: 30px; }
+      .info-box { margin-top: 7px; padding: 8px; min-height: 34mm; }
+      .info-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; }
+      .price-box { margin-top: 7px; padding: 8px; min-height: 21mm; }
+      .terms { margin-top: 4px; padding: 9px; min-height: 57mm; text-align: center; }
+      .terms p { margin: 6px 0; }
+      .terms .red { color: #d90000; font-weight: 800; }
+      .terms .left { text-align: left; }
+      .bottom-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8mm; }
+      .memo, .signature { min-height: 20mm; padding: 8px; }
+      b { font-weight: 800; }
+      .muted { color: #4b5563; }
+      .error { max-width: 720px; margin: 40px auto; padding: 24px; background: #fff; border: 1px solid #fecaca; color: #991b1b; font-weight: 700; }
+      @page { size: A4; margin: 0; }
+      body.embedded .print-toolbar { display: none; }
+      body.embedded .page { margin: 0 auto; box-shadow: none; }
+      @media print { body { background: #fff; } .print-toolbar { display: none; } .page { margin: 0; box-shadow: none; } }
+    </style>
+  </head>
+  <body>
+    <nav class="print-toolbar">
+      <a href="client-shipments.html">Retour liste</a>
+      <button type="button" id="print-button">Imprimer</button>
+    </nav>
+    <main id="document" class="page" hidden></main>
+    <div id="error" class="error" hidden></div>
+
+    <script>
+      const id = new URLSearchParams(window.location.search).get("id");
+      if (new URLSearchParams(window.location.search).get("embed") === "1") document.body.classList.add("embedded");
+
+      function escapeHtml(value) {
+        return cleanText(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+      }
+
+      function cleanText(value) {
+        return String(value ?? "")
+          .replace(/\uFFFD/g, "'")
+          .replace(/\s+'/g, "'");
+      }
+
+      function dateOnly(value) {
+        if (!value) return "";
+        const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("fr-FR");
+      }
+
+      function money(value) {
+        if (value === null || value === undefined || value === "") return "";
+        return `${Number(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
+      }
+
+      function lines(...values) {
+        return values.filter(Boolean).join("\n");
+      }
+
+      function notePart(notes, label) {
+        const text = String(notes || "");
+        const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const match = text.match(new RegExp(`${escaped}:\\s*([^\\n]+)`, "i"));
+        return match ? match[1].trim() : "";
+      }
+
+      function creatorContact(name) {
+        const key = String(name || "").trim().toUpperCase();
+        const contacts = { ALI: "ali@sga-groupe.fr", ELODIE: "elodie@sga-groupe.fr", ELO: "elodie@sga-groupe.fr", LOAN: "loan@sga-groupe.fr", LORIS: "loris@sga-groupe.fr" };
+        return contacts[key] || "facture@sga-groupe.fr";
+      }
+
+      function interlocutorLine(interlocutor, fallbackName) {
+        const name = interlocutor?.name || fallbackName || "SGA";
+        const email = interlocutor?.email || creatorContact(name);
+        const phone = interlocutor?.phone ? ` &nbsp;&nbsp; Tel : ${escapeHtml(interlocutor.phone)}` : "";
+        return `Interlocuteur : &nbsp; ${escapeHtml(name)} / ${escapeHtml(email)}${phone}`;
+      }
+
+      function render(payload) {
+        const company = payload.company || {};
+        const shipment = payload.shipment || {};
+        const carrier = payload.carrier || {};
+        const contact = payload.contact || {};
+        const interlocutor = payload.interlocutor || {};
+        const createdBy = shipment.legacyCreatedBy || "SGA";
+        const loadObs = notePart(shipment.notes, "Observations expediteur") || notePart(shipment.notes, "Instructions expediteur");
+        const deliveryObs = notePart(shipment.notes, "Observations destinataire") || notePart(shipment.notes, "Instructions destinataire");
+        const carrierInstruction = notePart(shipment.notes, "Instructions affrete") || shipment.notes || "";
+        const logoUrl = company.logoUrl || "assets/mytracking-logo.svg";
+        const showLogoBaseline = !company.logoUrl;
+        const termsText = String(company.notes || "");
+        const accountingName = notePart(company.notes, "Responsable comptabilite") || "Comptabilite";
+        const accountingPhone = notePart(company.notes, "Tel comptabilite") || company.phone || "";
+        const accountingEmail = notePart(company.notes, "Email comptabilite") || company.email || "";
+        const customTerms = termsText.includes("Texte confirmation affretement:")
+          ? termsText.split("Texte confirmation affretement:")[1].split("\nTel comptabilite:")[0].trim()
+          : "(Merci de bien vouloir envoyer toutes vos factures a l'adresse mail suivante: facture@sga-groupe.fr\n\nToute facture non recue sur cette adresse mail ne sera pas payee!)";
+        const doc = document.querySelector("#document");
+        doc.innerHTML = `
+          <section class="doc-head">
+            <div class="title"><span></span><span>Confirmation d'affretement</span><time>Le&nbsp;&nbsp; ${escapeHtml(dateOnly(new Date().toISOString()))}</time></div>
+            <div class="company">${escapeHtml(lines(company.name || "SGA", company.address1 || "56 IMPASSE GUICHENON", [company.postalCode || "01330", company.city || "VILLARS-LES-DOMBES"].filter(Boolean).join(" "), company.siret ? `Siret : ${company.siret}` : "Siret : 89214747100015", company.vatNumber ? `TVA Intra : ${company.vatNumber}` : "TVA Intra : FR92892147471"))}</div>
+            <div class="logo-box"><img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(company.name || "SGA")}">${showLogoBaseline ? "<strong>FRET - STOCKAGE - LOGISTIQUE</strong>" : ""}</div>
+            <div class="accounting">${escapeHtml(lines("Comptabilite :", accountingName, accountingPhone, accountingEmail))}</div>
+            <div class="interlocutor">${interlocutorLine(interlocutor, createdBy)}</div>
+          </section>
+
+          <section class="boxed carrier-header">
+            <div>A l'attention de : &nbsp; <b>${escapeHtml(contact.displayName || contact.names || "")}</b></div>
+            <div>Tel : &nbsp; ${escapeHtml(carrier.phone || "")}</div>
+            <div>Societe : &nbsp; <b>${escapeHtml(carrier.name || shipment.carrierName || "")}</b></div>
+            <div>Email : &nbsp; ${escapeHtml(contact.email || carrier.email || "")}</div>
+          </section>
+
+          <section class="two-boxes">
+            <article class="boxed site-box">
+              <div class="site-title">CHARGEMENT : &nbsp; ${escapeHtml(dateOnly(shipment.departureDate || shipment.pickupDate))} &nbsp;&nbsp; <b>AVANT 16H</b></div>
+              <div>STE :</div>
+              <div class="site-address">${escapeHtml(lines(shipment.senderName, shipment.senderAddress1, shipment.senderAddress2, shipment.senderAddress3, [shipment.senderCountryCode, shipment.senderPostalCode, shipment.senderCity].filter(Boolean).join(" ")))}</div>
+              <div class="site-footer">Obs&nbsp;&nbsp; ${escapeHtml(loadObs)}<br>Tel&nbsp;&nbsp;&nbsp;&nbsp; ${escapeHtml(shipment.senderPhone || "")}</div>
+            </article>
+            <article class="boxed site-box">
+              <div class="site-title">LIVRAISON : &nbsp; ${escapeHtml(dateOnly(shipment.requestedDeliveryDate || shipment.estimatedDeliveryDate || shipment.arrivalDate))} &nbsp;&nbsp; <b>AVANT 16H</b></div>
+              <div>STE :</div>
+              <div class="site-address">${escapeHtml(lines(shipment.recipientName, shipment.recipientAddress1, shipment.recipientAddress2, shipment.recipientAddress3, [shipment.recipientCountryCode, shipment.recipientPostalCode, shipment.recipientCity].filter(Boolean).join(" ")))}</div>
+              <div class="site-footer">Obs&nbsp;&nbsp; ${escapeHtml(deliveryObs)}<br>Tel&nbsp;&nbsp;&nbsp;&nbsp; ${escapeHtml(shipment.recipientPhone || "")}</div>
+            </article>
+          </section>
+
+          <section class="boxed info-box">
+            <div class="info-grid">
+              <div>N recepisse : &nbsp;&nbsp; <b>${escapeHtml(shipment.receiptNo || "")}</b></div>
+              <div>N OT : &nbsp;&nbsp; <b>${escapeHtml(shipment.orderReference || shipment.ediReference || shipment.receiptNo)}</b> &nbsp;&nbsp; A rappeler sur votre facture</div>
+              <div>Commande fournisseur : &nbsp;&nbsp; <b>${escapeHtml(shipment.supplierOrderReference || "")}</b></div>
+              <div>Reference EDI : &nbsp;&nbsp; <b>${escapeHtml(shipment.ediReference || "")}</b></div>
+              <div>Qte : &nbsp;&nbsp; <b>${escapeHtml([shipment.parcels ? `${shipment.parcels} colis` : "", shipment.goodsNature || ""].filter(Boolean).join(" - "))}</b></div>
+              <div>Poids : &nbsp;&nbsp; <b>${escapeHtml(shipment.weight ? `${Number(shipment.weight).toLocaleString("fr-FR")} KG` : "")}</b></div>
+            </div>
+          </section>
+
+          <section class="boxed price-box">
+            <div>PRIX CONVENU : &nbsp;&nbsp; <b>${escapeHtml(money(shipment.agreedPrice || shipment.subcontractAmount))}</b></div>
+            <div>Obs : &nbsp; ${escapeHtml(carrierInstruction)}</div>
+          </section>
+
+          <section class="boxed terms">
+            <p><b>Reglement 30 Jours le 10 a date de reception de Facture.</b></p>
+            <p class="muted">En cas de probleme ou de retard de transport ou des operations de (de)chargement, nous contacter imperativement</p>
+            <p class="red">Les documents de transports emarges (CMR + BON DE LIVRAISON) doivent IMPERATIVEMENT nous parvenir avec la facture.<br>Sans quoi celle-ci ne pourra etre honoree.</p>
+            <p class="left">Tout re-affretement est interdit sauf autorisation prealable de notre part.</p>
+            <p class="left">Les instructions de ce fax doivent etre suivies dans le strict respect de la reglementation sociale et routiere.</p>
+            <p class="left">L'acceptation de ce contrat de transport implique l'engagement des moyens necessaires a sa bonne execution.</p>
+            <p class="left"><b>${escapeHtml(customTerms).replaceAll("\n", "<br>")}</b></p>
+          </section>
+
+          <section class="bottom-boxes">
+            <div class="boxed memo">MEMO :</div>
+            <div class="boxed signature">Bon pour accord :<br>Signature :</div>
+          </section>
+        `;
+        doc.hidden = false;
+      }
+
+      async function load() {
+        if (!id) throw new Error("Affretement manquant.");
+        const response = await fetch(`/client-api/chartering-confirmations/${encodeURIComponent(id)}`);
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || "Confirmation indisponible.");
+        render(payload);
+      }
+
+      document.querySelector("#print-button").addEventListener("click", () => window.print());
+      load().catch((error) => {
+        const target = document.querySelector("#error");
+        target.textContent = error.message;
+        target.hidden = false;
+      });
+    </script>
+  </body>
+</html>

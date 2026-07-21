@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Expeditions</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="client-ui.css?v=20260710-05">
+  </head>
+  <body>
+    <main class="client-app premium-client-app">
+      <header class="client-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking">
+        </div>
+        <nav class="client-nav" aria-label="Navigation client">
+          <a href="client-customers.html" aria-label="Clients">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h10v10H4zM14 10h3l3 3v4h-6zM7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <span>Clients</span>
+          </a>
+          <a href="client-staff.html" aria-label="Personnel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0ZM4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Personnel</span>
+          </a>
+          <a class="active" href="client-shipments.html" aria-label="Expeditions">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Expeditions</span>
+          </a>
+          <a href="client-invoices.html" aria-label="Facturation">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h10v18l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V3ZM9.5 8h5M9.5 12h5M9.5 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Facturation</span>
+          </a>
+          <a href="#" aria-label="Documents">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Documents</span>
+          </a>
+        </nav>
+        <div class="client-user">
+          <label for="actor-name">Utilisateur</label>
+          <input id="actor-name" type="text" value="Client SGA">
+        </div>
+      </header>
+
+      <div class="client-layout">
+        <section class="client-content">
+          <div class="client-page-head">
+            <div>
+              <p class="access-kicker">SGA</p>
+              <h1>Expeditions</h1>
+              <p class="client-subtitle">Tableau de consultation des positions importees.</p>
+            </div>
+            <div class="client-actions">
+              <a class="primary-button page-action" href="client-chartering.html">Nouvel affretement</a>
+              <button class="secondary-button page-action" type="button" id="refresh-button">Actualiser</button>
+            </div>
+          </div>
+
+          <div class="client-kpis">
+            <section><span>Total</span><strong id="kpi-total">0</strong></section>
+            <section><span>Ouvertes</span><strong id="kpi-open">0</strong></section>
+            <section><span>Facturees</span><strong id="kpi-invoiced">0</strong></section>
+            <section><span>Souffrance</span><strong id="kpi-disputes">0</strong></section>
+          </div>
+
+          <section class="shipments-table-panel">
+            <div class="customer-toolbar shipments-toolbar">
+              <div class="field">
+                <label for="shipment-search">Recherche</label>
+                <input id="shipment-search" type="search" placeholder="Recepisse, client, transporteur, produit, ville, createur">
+              </div>
+              <div class="field">
+                <label for="shipment-date-from">Du</label>
+                <input id="shipment-date-from" type="date">
+              </div>
+              <div class="field">
+                <label for="shipment-date-to">Au</label>
+                <input id="shipment-date-to" type="date">
+              </div>
+              <div class="field">
+                <label for="shipment-status">Statut</label>
+                <select id="shipment-status">
+                  <option value="">Tous</option>
+                  <option value="open">Ouverte</option>
+                  <option value="invoiced">Facturee</option>
+                  <option value="closed">Soldee</option>
+                  <option value="dispute">Souffrance</option>
+                </select>
+              </div>
+            </div>
+            <div class="shipments-table-wrap">
+              <table class="shipments-table">
+                <thead>
+                  <tr>
+                    <th>Produit</th>
+                    <th>Recepisse</th>
+                    <th>Date depart</th>
+                    <th>Client / payeur</th>
+                    <th>Transporteur</th>
+                    <th class="num">Montant / renta</th>
+                    <th>Depart</th>
+                    <th>Arrivee</th>
+                    <th class="num">Colis</th>
+                    <th class="num">Poids</th>
+                    <th>Creation</th>
+                    <th>Statut</th>
+                    <th>Doc</th>
+                  </tr>
+                </thead>
+                <tbody id="shipments-body">
+                  <tr><td colspan="13" class="empty-row">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+
+    <div class="document-modal" id="chartering-modal" hidden>
+      <div class="document-modal-backdrop" data-close-confirmation></div>
+      <section class="document-modal-panel" role="dialog" aria-modal="true" aria-labelledby="confirmation-title">
+        <header class="document-modal-head">
+          <div>
+            <span>Document</span>
+            <h2 id="confirmation-title">Confirmation d'affretement</h2>
+          </div>
+          <div class="document-modal-actions">
+            <button class="secondary-button" type="button" id="confirmation-print">Imprimer</button>
+            <button class="secondary-button" type="button" data-close-confirmation>Fermer</button>
+          </div>
+        </header>
+        <div class="document-modal-body">
+          <div class="document-preview">
+            <iframe id="confirmation-frame" title="Apercu confirmation d'affretement"></iframe>
+          </div>
+          <aside class="mail-composer">
+            <div class="mail-composer-head">
+              <span>Envoi mail</span>
+              <strong id="mail-status">Pret</strong>
+            </div>
+            <form id="confirmation-mail-form">
+              <div class="field">
+                <label for="mail-to">Destinataire</label>
+                <input id="mail-to" type="email" placeholder="transporteur@exemple.fr" required>
+              </div>
+              <div class="field">
+                <label for="mail-cc">Copie</label>
+                <input id="mail-cc" type="email" placeholder="optionnel">
+              </div>
+              <div class="field">
+                <label for="mail-subject">Sujet</label>
+                <input id="mail-subject" type="text" required>
+              </div>
+              <div class="field">
+                <label for="mail-body">Corps du mail</label>
+                <div id="mail-body" class="mail-body-editor" contenteditable="true"></div>
+              </div>
+              <div class="mail-attachments">
+                <label>
+                  <input id="mail-attachment-confirmation" type="checkbox" checked>
+                  <span>Confirmation d'affretement en piece jointe</span>
+                </label>
+              </div>
+              <button class="primary-button" type="submit">Envoyer</button>
+            </form>
+          </aside>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const state = { shipments: [], stats: {}, searchTimer: null };
+      const modalState = { shipmentId: null, payload: null, staff: null };
+      const actorInput = document.querySelector("#actor-name");
+      actorInput.value = localStorage.getItem("mytrackingActor") || actorInput.value;
+      actorInput.addEventListener("input", () => localStorage.setItem("mytrackingActor", actorInput.value.trim()));
+
+      function escapeHtml(value) {
+        return cleanText(value).replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+
+      function cleanText(value) {
+        return String(value ?? "")
+          .replace(/\bN\s*\uFFFD/gi, "N°")
+          .replace(/\uFFFD/g, "'")
+          .replace(/\s+'/g, "'");
+      }
+
+      function dateOnly(value) {
+        if (!value) return "";
+        const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) return `${match[3]}/${match[2]}/${match[1]}`;
+        return new Date(value).toLocaleDateString("fr-FR");
+      }
+
+      function dateTime(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
+      }
+
+      function money(value) {
+        if (value === null || value === undefined || value === "") return "";
+        return Number(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+
+      function profitability(shipment) {
+        const sale = Number(shipment.transportAmount || 0);
+        const purchase = Number(shipment.agreedPrice || 0);
+        const margin = sale - purchase;
+        const rate = sale ? margin / sale * 100 : 0;
+        return { sale, purchase, margin, rate };
+      }
+
+      function profitabilityTone(renta) {
+        if (!renta.sale && !renta.purchase) return "unknown";
+        if (renta.margin < 0) return "loss";
+        if (renta.rate < 10) return "low";
+        if (renta.rate < 20) return "watch";
+        if (renta.rate < 35) return "good";
+        return "excellent";
+      }
+
+      function countryFlag(country) {
+        const code = String(country || "").trim().toUpperCase();
+        if (!/^[A-Z]{2}$/.test(code)) return "";
+        return String.fromCodePoint(...[...code].map((char) => 127397 + char.charCodeAt(0)));
+      }
+
+      function place(country, postalCode, city) {
+        return [countryFlag(country), country, postalCode, city].filter(Boolean).join(" ");
+      }
+
+      function customerPayer(shipment) {
+        const customer = shipment.customerName || shipment.senderName || shipment.customerCode || "";
+        const payer = shipment.payerName || shipment.payerCode || "";
+        return { customer, payer };
+      }
+
+      function statusLabel(shipment) {
+        if (shipment.isDispute || shipment.status === "dispute") return "Souffrance";
+        if (shipment.status === "invoiced") return "Facturee";
+        if (shipment.isClosed || shipment.status === "closed") return "Soldee";
+        return "Ouverte";
+      }
+
+      function renderKpis() {
+        document.querySelector("#kpi-total").textContent = state.stats.total || state.shipments.length;
+        document.querySelector("#kpi-open").textContent = state.stats.open || 0;
+        document.querySelector("#kpi-invoiced").textContent = state.stats.invoiced || 0;
+        document.querySelector("#kpi-disputes").textContent = state.stats.disputes || 0;
+      }
+
+      function renderTable() {
+        renderKpis();
+        const body = document.querySelector("#shipments-body");
+        if (!state.shipments.length) {
+          body.innerHTML = '<tr><td colspan="13" class="empty-row">Aucune expedition trouvee.</td></tr>';
+          return;
+        }
+        body.innerHTML = state.shipments.map((shipment) => {
+          const renta = profitability(shipment);
+          const tone = profitabilityTone(renta);
+          return `
+          <tr>
+            <td>${escapeHtml(shipment.productCode)}</td>
+            <td>
+              <strong>${escapeHtml(shipment.receiptNo)}</strong>
+              <small>OT ${escapeHtml(shipment.orderReference || "")}</small>
+              <small>CF ${escapeHtml(shipment.supplierOrderReference || "")}</small>
+            </td>
+            <td>${escapeHtml(dateOnly(shipment.departureDate))}</td>
+            <td>
+              <strong>${escapeHtml(customerPayer(shipment).customer)}</strong>
+              <small>${escapeHtml(customerPayer(shipment).payer)}</small>
+            </td>
+            <td>
+              <strong>${escapeHtml(shipment.carrierName)}</strong>
+              <small>${escapeHtml(money(shipment.agreedPrice))}</small>
+            </td>
+            <td class="num profitability-cell ${tone}">
+              <strong>${escapeHtml(money(renta.sale))}</strong>
+              <span class="profitability-pill">
+                <b>${escapeHtml(money(renta.margin))}</b>
+                <i>${escapeHtml(renta.rate.toFixed(1))} %</i>
+              </span>
+            </td>
+            <td>${escapeHtml(place(shipment.senderCountryCode, shipment.senderPostalCode, shipment.senderCity))}</td>
+            <td>${escapeHtml(place(shipment.recipientCountryCode, shipment.recipientPostalCode, shipment.recipientCity))}</td>
+            <td class="num">${escapeHtml(shipment.parcels)}</td>
+            <td class="num">${escapeHtml(money(shipment.weight))}</td>
+            <td>
+              <strong class="nowrap">${escapeHtml(dateTime(shipment.legacyCreatedAt))}</strong>
+              <small>${escapeHtml(shipment.legacyCreatedBy)}</small>
+            </td>
+            <td><span class="table-badge">${escapeHtml(statusLabel(shipment))}</span></td>
+            <td>
+              ${shipment.isChartering ? `<button class="table-icon-button" type="button" data-confirmation-id="${escapeHtml(shipment.id)}" title="Confirmation d'affretement" aria-label="Confirmation d'affretement">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v5h4M9.5 12h5M9.5 16h5M9.5 19h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>` : ""}
+            </td>
+          </tr>
+        `;
+        }).join("");
+      }
+
+      async function loadCurrentStaff() {
+        const params = new URLSearchParams({ actor: actorInput.value.trim() || "Client SGA" });
+        const response = await fetch(`/client-api/current-staff?${params}`);
+        if (!response.ok) return null;
+        const data = await response.json();
+        return data.staff || null;
+      }
+
+      function defaultMailBody(payload, staff) {
+        const shipment = payload.shipment || {};
+        const carrier = payload.carrier || {};
+        const sender = staff || payload.interlocutor || {};
+        const signature = sender.mailSignatureHtml || "";
+        return `
+          <p>Bonjour,</p>
+          <p>Veuillez trouver ci-joint notre confirmation d'affretement pour le recepisse <strong>${escapeHtml(shipment.receiptNo || "")}</strong>.</p>
+          <p>Merci de nous retourner la confirmation signee et de rappeler le numero OT <strong>${escapeHtml(shipment.orderReference || shipment.receiptNo || "")}</strong> sur votre facture.</p>
+          <p>Cordialement,</p>
+          ${signature || `<p><strong>${escapeHtml(sender.displayName || sender.name || actorInput.value)}</strong><br>${escapeHtml(sender.email || "")}<br>${escapeHtml(sender.phone || "")}</p>`}
+        `;
+      }
+
+      function setMailStatus(text, tone = "") {
+        const target = document.querySelector("#mail-status");
+        target.textContent = text;
+        target.dataset.tone = tone;
+      }
+
+      async function openConfirmationModal(id) {
+        modalState.shipmentId = id;
+        modalState.payload = null;
+        modalState.staff = null;
+        const modal = document.querySelector("#chartering-modal");
+        const frame = document.querySelector("#confirmation-frame");
+        modal.hidden = false;
+        document.body.classList.add("modal-open");
+        setMailStatus("Chargement");
+        frame.src = `client-chartering-confirmation.html?id=${encodeURIComponent(id)}&embed=1`;
+
+        const response = await fetch(`/client-api/chartering-confirmations/${encodeURIComponent(id)}`);
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(payload.error || "Confirmation indisponible.");
+        modalState.payload = payload;
+        modalState.staff = await loadCurrentStaff();
+        const shipment = payload.shipment || {};
+        const carrier = payload.carrier || {};
+        const contact = payload.contact || {};
+        const recipient = contact.email || carrier.email || "";
+        const subject = `Confirmation d'affretement ${shipment.receiptNo || ""} - ${shipment.senderCity || ""} / ${shipment.recipientCity || ""}`.trim();
+        document.querySelector("#mail-to").value = recipient;
+        document.querySelector("#mail-cc").value = "";
+        document.querySelector("#mail-subject").value = subject;
+        document.querySelector("#mail-body").innerHTML = defaultMailBody(payload, modalState.staff);
+        setMailStatus(recipient ? "Pret" : "Destinataire a saisir", recipient ? "ready" : "warning");
+      }
+
+      function closeConfirmationModal() {
+        document.querySelector("#chartering-modal").hidden = true;
+        document.querySelector("#confirmation-frame").src = "about:blank";
+        document.body.classList.remove("modal-open");
+        modalState.shipmentId = null;
+      }
+
+      async function submitConfirmationMail(event) {
+        event.preventDefault();
+        if (!modalState.shipmentId || !modalState.payload) return;
+        setMailStatus("Envoi...");
+        const attachments = document.querySelector("#mail-attachment-confirmation").checked
+          ? [{
+              type: "chartering_confirmation",
+              label: "Confirmation d'affretement",
+              url: `/client-chartering-confirmation.html?id=${encodeURIComponent(modalState.shipmentId)}`,
+            }]
+          : [];
+        const response = await fetch(`/client-api/chartering-confirmations/${encodeURIComponent(modalState.shipmentId)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            actor: actorInput.value.trim() || "Client SGA",
+            recipientEmail: document.querySelector("#mail-to").value.trim(),
+            ccEmail: document.querySelector("#mail-cc").value.trim(),
+            subject: document.querySelector("#mail-subject").value.trim(),
+            bodyHtml: document.querySelector("#mail-body").innerHTML,
+            attachments,
+          }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Envoi impossible.");
+        setMailStatus(data.dispatch?.status === "ready_to_send" ? "Pret SMTP" : "Prepare", data.dispatch?.status === "ready_to_send" ? "ready" : "warning");
+        await loadShipments();
+      }
+
+      async function loadShipments() {
+        const params = new URLSearchParams();
+        const search = document.querySelector("#shipment-search").value.trim();
+        const status = document.querySelector("#shipment-status").value;
+        const dateFrom = document.querySelector("#shipment-date-from").value;
+        const dateTo = document.querySelector("#shipment-date-to").value;
+        if (search) params.set("search", search);
+        if (status) params.set("status", status);
+        if (dateFrom) params.set("dateFrom", dateFrom);
+        if (dateTo) params.set("dateTo", dateTo);
+        const query = params.toString();
+        const response = await fetch(`/client-api/shipments${query ? `?${query}` : ""}`);
+        if (!response.ok) throw new Error("Chargement impossible.");
+        const data = await response.json();
+        state.shipments = data.shipments || [];
+        state.stats = data.stats || {};
+        renderTable();
+      }
+
+      document.querySelector("#shipment-search").addEventListener("input", () => {
+        window.clearTimeout(state.searchTimer);
+        state.searchTimer = window.setTimeout(() => loadShipments(), 250);
+      });
+      document.querySelector("#shipment-status").addEventListener("change", loadShipments);
+      document.querySelector("#shipment-date-from").addEventListener("change", loadShipments);
+      document.querySelector("#shipment-date-to").addEventListener("change", loadShipments);
+      document.querySelector("#refresh-button").addEventListener("click", loadShipments);
+      document.querySelector("#shipments-body").addEventListener("click", (event) => {
+        const button = event.target.closest("[data-confirmation-id]");
+        if (!button) return;
+        openConfirmationModal(button.dataset.confirmationId).catch((error) => setMailStatus(error.message, "error"));
+      });
+      document.querySelectorAll("[data-close-confirmation]").forEach((target) => target.addEventListener("click", closeConfirmationModal));
+      document.querySelector("#confirmation-print").addEventListener("click", () => {
+        const frame = document.querySelector("#confirmation-frame");
+        frame.contentWindow?.focus();
+        frame.contentWindow?.print();
+      });
+      document.querySelector("#confirmation-mail-form").addEventListener("submit", (event) => {
+        submitConfirmationMail(event).catch((error) => setMailStatus(error.message, "error"));
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !document.querySelector("#chartering-modal").hidden) closeConfirmationModal();
+      });
+      loadShipments().catch((error) => {
+        document.querySelector("#shipments-body").innerHTML = `<tr><td colspan="13" class="empty-row">${escapeHtml(error.message)}</td></tr>`;
+      });
+    </script>
+  </body>
+</html>

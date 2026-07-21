@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Admin - Societes clientes</title>
+    <link rel="stylesheet" href="auth.css">
+  </head>
+  <body>
+    <main class="admin-app">
+      <header class="admin-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="../assets/mytracking-logo.svg" alt="MyTracking Admin">
+        </div>
+        <div class="admin-user">mikael.jurgielewicz@cw2s.fr</div>
+      </header>
+
+      <div class="admin-layout">
+        <nav class="admin-sidebar" aria-label="Navigation admin">
+          <a class="active" href="index.html">Societes</a>
+          <a href="#">Provisioning</a>
+          <a href="#">Imports WinDev</a>
+          <a href="#">Utilisateurs</a>
+          <a href="#">Journal</a>
+        </nav>
+
+        <section class="admin-content">
+          <div class="page-head">
+            <div>
+              <p class="access-kicker">Backoffice plateforme</p>
+              <h1>Societes clientes</h1>
+              <p>Vue de pilotage des tenants MyTracking : statut, base dediee, migration et premiers acces.</p>
+            </div>
+            <button class="primary-button page-action" type="button" onclick="window.location.href='create-company.html'">Nouveau</button>
+          </div>
+
+          <div class="kpi-row">
+            <section class="kpi-card"><span>Societes</span><strong id="kpi-companies">0</strong></section>
+            <section class="kpi-card"><span>Actives</span><strong id="kpi-active">0</strong></section>
+            <section class="kpi-card"><span>En migration</span><strong id="kpi-migration">0</strong></section>
+            <section class="kpi-card"><span>Erreurs</span><strong id="kpi-error">0</strong></section>
+          </div>
+
+          <section class="admin-section">
+            <div class="section-toolbar">
+              <div class="field">
+                <label for="tenant-search">Recherche</label>
+                <input id="tenant-search" type="search" placeholder="Nom, code, SIRET">
+              </div>
+              <div class="field">
+                <label for="tenant-status">Statut</label>
+                <select id="tenant-status">
+                  <option value="">Tous les statuts</option>
+                  <option value="active">Actif</option>
+                  <option value="draft">Brouillon</option>
+                  <option value="migration">Migration</option>
+                  <option value="error">Erreur</option>
+                  <option value="suspended">Suspendu</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="table-scroll">
+              <table class="tenant-table" aria-label="Liste des societes clientes">
+                <thead>
+                  <tr>
+                    <th>Societe</th>
+                    <th>Code</th>
+                    <th>Statut</th>
+                    <th>Base dediee</th>
+                    <th>Personnel</th>
+                    <th>Derniere action</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="companies-body">
+                  <tr><td colspan="7">Chargement des societes...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+    <script>
+      const state = { companies: [] };
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]);
+      }
+
+      function statusLabel(status) {
+        return { active: "Actif", draft: "Brouillon", migration: "Migration", error: "Erreur", suspended: "Suspendu" }[status] || status || "Brouillon";
+      }
+
+      function tenantDatabase(company) {
+        return company.code ? `mytracking_${String(company.code).toLowerCase()}` : "Base beta";
+      }
+
+      function lastAction(company) {
+        if (company.sourceSystem === "windev_hfsql") return "Import WinDev";
+        if (company.updatedAt) return `Mis a jour le ${formatDate(company.updatedAt)}`;
+        return "A completer";
+      }
+
+      function renderCompanies() {
+        const search = document.querySelector("#tenant-search").value.trim().toLowerCase();
+        const status = document.querySelector("#tenant-status").value;
+        const filtered = state.companies.filter((company) => {
+          const haystack = [company.name, company.code, company.siret, company.legacyId].filter(Boolean).join(" ").toLowerCase();
+          return (!search || haystack.includes(search)) && (!status || company.status === status);
+        });
+        document.querySelector("#kpi-companies").textContent = state.companies.length;
+        document.querySelector("#kpi-active").textContent = state.companies.filter((item) => item.status === "active").length;
+        document.querySelector("#kpi-migration").textContent = state.companies.filter((item) => item.status === "migration").length;
+        document.querySelector("#kpi-error").textContent = state.companies.filter((item) => item.status === "error").length;
+        const body = document.querySelector("#companies-body");
+        if (!filtered.length) {
+          body.innerHTML = '<tr><td colspan="7">Aucune societe trouvee.</td></tr>';
+          return;
+        }
+        body.innerHTML = filtered.map((company) => `
+          <tr>
+            <td><strong>${escapeHtml(company.name)}</strong><span>${escapeHtml(company.siret || `ID WinDev ${company.legacyId || "-"}`)}</span></td>
+            <td>${escapeHtml(company.code)}</td>
+            <td><span class="badge badge-${escapeHtml(company.status || "draft")}">${escapeHtml(statusLabel(company.status))}</span></td>
+            <td>${escapeHtml(tenantDatabase(company))}</td>
+            <td>${escapeHtml(company.contactName || "Acces client")}</td>
+            <td>${escapeHtml(lastAction(company))}</td>
+            <td><button class="secondary-button table-button" type="button" onclick="window.location.href='create-company.html?id=${encodeURIComponent(company.id)}'">Ouvrir</button></td>
+          </tr>
+        `).join("");
+      }
+
+      async function loadCompanies() {
+        const response = await fetch("/admin/api/companies", { headers: { Accept: "application/json" } });
+        if (!response.ok) {
+          document.querySelector("#companies-body").innerHTML = '<tr><td colspan="7">Session admin expiree ou API indisponible.</td></tr>';
+          return;
+        }
+        const payload = await response.json();
+        state.companies = payload.companies || [];
+        renderCompanies();
+      }
+
+      function formatDate(value) {
+        if (!value) return "jamais";
+        return new Date(value).toLocaleString("fr-FR");
+      }
+
+      document.querySelector("#tenant-search").addEventListener("input", renderCompanies);
+      document.querySelector("#tenant-status").addEventListener("change", renderCompanies);
+      loadCompanies();
+    </script>
+  </body>
+</html>

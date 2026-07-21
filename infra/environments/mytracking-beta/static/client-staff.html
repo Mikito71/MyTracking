@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MyTracking Client - Personnel</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="client-ui.css?v=20260721-01">
+  </head>
+  <body>
+    <main class="client-app premium-client-app">
+      <header class="client-topbar">
+        <div class="brand-mark">
+          <img class="brand-logo" src="assets/mytracking-logo.svg" alt="MyTracking">
+        </div>
+        <nav class="client-nav" aria-label="Navigation client">
+          <a href="client-customers.html" aria-label="Clients">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h10v10H4zM14 10h3l3 3v4h-6zM7 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM17 19a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            <span>Clients</span>
+          </a>
+          <a class="active" href="client-staff.html" aria-label="Personnel">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 9a4 4 0 1 1 8 0 4 4 0 0 1-8 0ZM4.5 20a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span>Personnel</span>
+          </a>
+          <a href="client-shipments.html" aria-label="Expeditions">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 8h11v8H5zM16 11h3l2 2.5V16h-5zM8 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM18 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM8 5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Expeditions</span>
+          </a>
+          <a href="client-invoices.html" aria-label="Facturation">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h10v18l-2-1.2-2 1.2-2-1.2-2 1.2-2-1.2V3ZM9.5 8h5M9.5 12h5M9.5 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Facturation</span>
+          </a>
+          <a href="#" aria-label="Documents">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Documents</span>
+          </a>
+        </nav>
+        <div class="client-user">
+          <label for="actor-name">Utilisateur</label>
+          <input id="actor-name" type="text" value="Client SGA">
+        </div>
+      </header>
+
+      <div class="client-layout">
+        <section class="client-content">
+          <div class="client-page-head">
+            <div>
+              <p class="access-kicker">SGA</p>
+              <h1>Personnel</h1>
+              <p class="client-subtitle">Equipe SGA disponible pour preparer les acces, les roles et les contacts de la future application.</p>
+            </div>
+            <div class="client-actions">
+              <a class="secondary-button page-action" href="client-analytics.html">Statistiques</a>
+              <button class="secondary-button page-action" type="button" id="refresh-button">Actualiser</button>
+              <button class="primary-button page-action" type="button" id="save-button">Enregistrer</button>
+            </div>
+          </div>
+
+          <div class="customer-workspace">
+            <section class="customer-list-panel">
+              <div class="customer-toolbar">
+                <div class="field">
+                  <label for="staff-search">Recherche</label>
+                  <input id="staff-search" type="search" placeholder="Nom, email, role">
+                </div>
+              </div>
+              <div class="customer-list" id="staff-list"></div>
+            </section>
+
+            <section class="customer-detail-panel">
+              <div class="detail-empty" id="detail-empty">Selectionnez une personne.</div>
+              <form class="customer-detail" id="staff-form" hidden>
+                <div class="detail-head">
+                  <div>
+                    <span id="detail-role"></span>
+                    <h2 id="detail-title"></h2>
+                  </div>
+                  <span class="badge badge-active" id="detail-status-label">Actif</span>
+                </div>
+
+                <div class="detail-tabs" role="tablist">
+                  <button class="active" type="button" data-tab="identity">Fiche</button>
+                  <button type="button" data-tab="history">Historique</button>
+                </div>
+
+                <section class="detail-tab active" data-panel="identity">
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="first-name">Prenom</label>
+                      <input id="first-name" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="last-name">Nom</label>
+                      <input id="last-name" type="text">
+                    </div>
+                    <div class="field full">
+                      <label for="display-name">Nom affiche</label>
+                      <input id="display-name" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="login">Login WinDev</label>
+                      <input id="login" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="role">Role</label>
+                      <select id="role">
+                        <option value="PERSONNEL">Personnel</option>
+                        <option value="EXPLOITATION">Exploitation</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="COMPTA">Compta</option>
+                        <option value="CHAUFFEUR">Chauffeur</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="status">Statut</label>
+                      <select id="status">
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="email">Email</label>
+                      <input id="email" type="email">
+                    </div>
+                    <div class="field">
+                      <label for="phone">Telephone</label>
+                      <input id="phone" type="tel">
+                    </div>
+                    <div class="field">
+                      <label for="smtp-server">Serveur SMTP</label>
+                      <input id="smtp-server" type="text">
+                    </div>
+                    <div class="field">
+                      <label for="smtp-port">Port SMTP</label>
+                      <input id="smtp-port" type="text">
+                    </div>
+                    <div class="field full">
+                      <label>Mot de passe SMTP</label>
+                      <div class="readonly-secret" id="mail-password-status">Non renseigne</div>
+                    </div>
+                    <div class="field full">
+                      <label for="smtp-password">Nouveau mot de passe SMTP</label>
+                      <input id="smtp-password" type="password" autocomplete="new-password" placeholder="Laisser vide pour conserver le mot de passe actuel">
+                    </div>
+                    <div class="field full">
+                      <label for="mail-html-file">Fichier HTML email</label>
+                      <input id="mail-html-file" type="text">
+                    </div>
+                    <div class="field full">
+                      <label for="mail-signature-html">Signature mail HTML</label>
+                      <div class="signature-editor">
+                        <div class="signature-toolbar" aria-label="Outils signature">
+                          <button type="button" data-command="bold"><b>B</b></button>
+                          <button type="button" data-command="italic"><i>I</i></button>
+                          <button type="button" data-command="insertUnorderedList">Liste</button>
+                          <button type="button" data-action="link">Lien</button>
+                          <button type="button" data-action="image">Image</button>
+                          <button type="button" data-action="template">Modele</button>
+                        </div>
+                        <input id="signature-image-input" type="file" accept="image/*" hidden>
+                        <div id="signature-visual-editor" class="signature-visual-editor" contenteditable="true"></div>
+                        <details class="signature-source">
+                          <summary>Code HTML</summary>
+                          <textarea id="mail-signature-html"></textarea>
+                        </details>
+                      </div>
+                    </div>
+                    <div class="field full">
+                      <label for="notes">Notes</label>
+                      <textarea id="notes"></textarea>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="detail-tab" data-panel="history">
+                  <div class="history-list" id="history-list"></div>
+                </section>
+              </form>
+            </section>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const state = { staff: [], selectedId: null };
+      const actorInput = document.querySelector("#actor-name");
+      actorInput.value = localStorage.getItem("mytrackingActor") || actorInput.value;
+      actorInput.addEventListener("input", () => localStorage.setItem("mytrackingActor", actorInput.value.trim()));
+      const fields = {
+        firstName: document.querySelector("#first-name"),
+        lastName: document.querySelector("#last-name"),
+        displayName: document.querySelector("#display-name"),
+        login: document.querySelector("#login"),
+        role: document.querySelector("#role"),
+        status: document.querySelector("#status"),
+        email: document.querySelector("#email"),
+        phone: document.querySelector("#phone"),
+        smtpServer: document.querySelector("#smtp-server"),
+        smtpPort: document.querySelector("#smtp-port"),
+        smtpPassword: document.querySelector("#smtp-password"),
+        mailHtmlFile: document.querySelector("#mail-html-file"),
+        mailSignatureHtml: document.querySelector("#mail-signature-html"),
+        notes: document.querySelector("#notes"),
+      };
+      const signatureEditor = document.querySelector("#signature-visual-editor");
+      const signatureTextarea = document.querySelector("#mail-signature-html");
+      const signatureImageInput = document.querySelector("#signature-image-input");
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+
+      function setField(key, value) {
+        fields[key].value = value ?? "";
+      }
+
+      function syncSignatureFromEditor() {
+        signatureTextarea.value = signatureEditor.innerHTML.trim();
+      }
+
+      function syncSignatureToEditor(value) {
+        signatureTextarea.value = value ?? "";
+        signatureEditor.innerHTML = signatureTextarea.value || "";
+      }
+
+      function insertSignatureHtml(html) {
+        signatureEditor.focus();
+        document.execCommand("insertHTML", false, html);
+        syncSignatureFromEditor();
+      }
+
+      function signatureTemplate(person = {}) {
+        const name = person.displayName || [fields.firstName.value, fields.lastName.value].filter(Boolean).join(" ") || "Prenom Nom";
+        const phone = person.phone || fields.phone.value || "";
+        const email = person.email || fields.email.value || "";
+        return `
+          <p><strong>${escapeHtml(name)}</strong></p>
+          <p>SGA - Fret, stockage, logistique<br>
+          ${phone ? `Tel : ${escapeHtml(phone)}<br>` : ""}
+          ${email ? `<a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>` : ""}</p>
+        `.trim();
+      }
+
+      function payload() {
+        syncSignatureFromEditor();
+        const data = {};
+        Object.entries(fields).forEach(([key, input]) => data[key] = input.value.trim());
+        data.changedBy = actorInput.value.trim() || "Utilisateur client beta";
+        return data;
+      }
+
+      function renderList() {
+        const search = document.querySelector("#staff-search").value.trim().toLowerCase();
+        const rows = state.staff.filter((item) => {
+          const haystack = [item.displayName, item.email, item.role].join(" ").toLowerCase();
+          return !search || haystack.includes(search);
+        });
+        const list = document.querySelector("#staff-list");
+        if (!rows.length) {
+          list.innerHTML = '<div class="empty-row">Aucun personnel trouve.</div>';
+          return;
+        }
+        list.innerHTML = rows.map((person) => `
+          <button class="customer-row ${String(person.id) === String(state.selectedId) ? "active" : ""}" type="button" data-id="${person.id}">
+            <span>
+              <strong>${escapeHtml(person.displayName)}</strong>
+              <small>${escapeHtml(person.email || "Email a completer")}</small>
+            </span>
+            <em>${escapeHtml(person.role)}</em>
+          </button>
+        `).join("");
+        list.querySelectorAll(".customer-row").forEach((button) => button.addEventListener("click", () => selectStaff(button.dataset.id)));
+      }
+
+      async function loadStaff() {
+        const response = await fetch("/client-api/staff");
+        if (!response.ok) throw new Error("Chargement impossible.");
+        const payload = await response.json();
+        state.staff = payload.staff || [];
+        renderList();
+        if (!state.selectedId && state.staff.length) selectStaff(state.staff[0].id);
+      }
+
+      function fillForm(person) {
+        state.selectedId = person.id;
+        Object.keys(fields).forEach((key) => setField(key, person[key]));
+        fields.smtpPassword.value = "";
+        syncSignatureToEditor(person.mailSignatureHtml);
+        document.querySelector("#detail-empty").hidden = true;
+        document.querySelector("#staff-form").hidden = false;
+        document.querySelector("#detail-title").textContent = person.displayName;
+        document.querySelector("#detail-role").textContent = person.role;
+        document.querySelector("#mail-password-status").textContent = person.mailPasswordConfigured ? "Renseigne - masque" : "Non renseigne";
+        const statusLabel = document.querySelector("#detail-status-label");
+        statusLabel.textContent = person.status === "active" ? "Actif" : "Inactif";
+        statusLabel.className = `badge ${person.status === "active" ? "badge-active" : "badge-draft"}`;
+        renderList();
+      }
+
+      async function selectStaff(id) {
+        const response = await fetch(`/client-api/staff/${id}`);
+        if (!response.ok) return;
+        const data = await response.json();
+        fillForm(data.staff);
+        loadHistory(id);
+      }
+
+      function renderHistory(events) {
+        const list = document.querySelector("#history-list");
+        if (!events.length) {
+          list.innerHTML = '<div class="empty-row">Aucun historique.</div>';
+          return;
+        }
+        list.innerHTML = events.map((event) => {
+          const changes = Object.entries(event.changes || {}).map(([field, value]) => `
+            <li><strong>${escapeHtml(field)}</strong> : ${escapeHtml(value.from ?? "vide")} -> ${escapeHtml(value.to ?? "vide")}</li>
+          `).join("");
+          return `
+            <article class="history-item">
+              <header><strong>${escapeHtml(event.changedBy)}</strong><span>${new Date(event.changedAt).toLocaleString("fr-FR")}</span></header>
+              <p>${event.action === "import" ? "Import" : "Modification"}</p>
+              ${changes ? `<ul>${changes}</ul>` : ""}
+            </article>
+          `;
+        }).join("");
+      }
+
+      async function loadHistory(id) {
+        const response = await fetch(`/client-api/staff/${id}/history`);
+        if (!response.ok) return;
+        const data = await response.json();
+        renderHistory(data.events || []);
+      }
+
+      async function saveStaff() {
+        if (!state.selectedId) return;
+        const button = document.querySelector("#save-button");
+        button.disabled = true;
+        button.textContent = "Enregistrement...";
+        const response = await fetch(`/client-api/staff/${state.selectedId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload()),
+        });
+        const data = await response.json().catch(() => ({}));
+        button.disabled = false;
+        button.textContent = "Enregistrer";
+        if (!response.ok) {
+          alert(data.error || "Sauvegarde impossible.");
+          return;
+        }
+        await loadStaff();
+        await selectStaff(data.staff.id);
+      }
+
+      document.querySelector("#staff-search").addEventListener("input", renderList);
+      document.querySelector("#refresh-button").addEventListener("click", loadStaff);
+      document.querySelector("#save-button").addEventListener("click", saveStaff);
+      signatureEditor.addEventListener("input", syncSignatureFromEditor);
+      signatureTextarea.addEventListener("input", () => syncSignatureToEditor(signatureTextarea.value));
+      signatureImageInput.addEventListener("change", () => {
+        const file = signatureImageInput.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          insertSignatureHtml(`<img src="${reader.result}" alt="" style="max-width:100%;height:auto;">`);
+          signatureImageInput.value = "";
+        });
+        reader.readAsDataURL(file);
+      });
+      document.querySelectorAll(".signature-toolbar button").forEach((button) => {
+        button.addEventListener("click", () => {
+          signatureEditor.focus();
+          if (button.dataset.command) document.execCommand(button.dataset.command, false, null);
+          if (button.dataset.action === "link") {
+            const url = window.prompt("Adresse du lien");
+            if (url) document.execCommand("createLink", false, url);
+          }
+          if (button.dataset.action === "image") signatureImageInput.click();
+          if (button.dataset.action === "template") {
+            const person = state.staff.find((item) => String(item.id) === String(state.selectedId)) || {};
+            signatureEditor.innerHTML = signatureTemplate(person);
+          }
+          syncSignatureFromEditor();
+        });
+      });
+      document.querySelectorAll(".detail-tabs button").forEach((button) => {
+        button.addEventListener("click", () => {
+          document.querySelectorAll(".detail-tabs button").forEach((item) => item.classList.remove("active"));
+          document.querySelectorAll(".detail-tab").forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          document.querySelector(`[data-panel="${button.dataset.tab}"]`).classList.add("active");
+        });
+      });
+      loadStaff().catch((error) => {
+        document.querySelector("#staff-list").innerHTML = `<div class="empty-row">${escapeHtml(error.message)}</div>`;
+      });
+    </script>
+  </body>
+</html>
